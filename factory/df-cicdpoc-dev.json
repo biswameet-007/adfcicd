@@ -1,0 +1,9 @@
+{
+	"name": "df-cicdpoc-dev",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "b6f613b2-a815-45f2-9317-5b5d812557c8",
+		"tenantId": "879782ba-90f5-45be-b3f0-980b8c104931"
+	}
+}
