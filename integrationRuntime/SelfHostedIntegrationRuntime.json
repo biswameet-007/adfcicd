@@ -1,0 +1,12 @@
+{
+	"name": "SelfHostedIntegrationRuntime",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"linkedInfo": {
+				"resourceId": "/subscriptions/cce3181d-fb12-4092-8d8a-c91545fb15e6/resourcegroups/RGDPDEVGEN01/providers/Microsoft.DataFactory/factories/df-dp-analytics-dev/integrationruntimes/SelfHostedIR",
+				"authorizationType": "Rbac"
+			}
+		}
+	}
+}
