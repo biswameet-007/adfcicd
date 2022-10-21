@@ -9,6 +9,10 @@
 			"MaximoRejectPath": {
 				"type": "string",
 				"value": " raw/maximo/rejects"
+			},
+			"MaximoInputPath": {
+				"type": "string",
+				"value": "raw/maximo/input"
 			}
 		}
 	},
