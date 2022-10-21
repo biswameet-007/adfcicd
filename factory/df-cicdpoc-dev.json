@@ -58,6 +58,10 @@
 			"MaximoStgWoStatusInput": {
 				"type": "string",
 				"value": "wostatus_20220804.txt"
+			},
+			"Maximorelativelandingpath": {
+				"type": "string",
+				"value": " maximo/landing"
 			}
 		}
 	},
