@@ -54,6 +54,10 @@
 			"MaximoStgWorkorderInput": {
 				"type": "string",
 				"value": "workorder_20220804.txt"
+			},
+			"MaximoStgWoStatusInput": {
+				"type": "string",
+				"value": "wostatus_20220804.txt"
 			}
 		}
 	},
