@@ -1,0 +1,62 @@
+{
+	"name": "srcRawStgWoStatus_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"InputPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "wostatus.txt",
+				"folderPath": {
+					"value": "@dataset().InputPath",
+					"type": "Expression"
+				},
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "WONUM",
+				"type": "String"
+			},
+			{
+				"name": "PARENT",
+				"type": "String"
+			},
+			{
+				"name": "STATUS",
+				"type": "String"
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "String"
+			},
+			{
+				"name": "CHANGEBY",
+				"type": "String"
+			},
+			{
+				"name": "ORGID",
+				"type": "String"
+			},
+			{
+				"name": "SITEID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

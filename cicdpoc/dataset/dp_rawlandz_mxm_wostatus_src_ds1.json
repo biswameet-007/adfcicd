@@ -1,0 +1,17 @@
+{
+	"name": "dp_rawlandz_mxm_wostatus_src_ds1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Db2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "MAXIMO",
+			"table": "WOSTATUS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

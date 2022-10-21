@@ -1,0 +1,76 @@
+{
+	"name": "dprawlandz_mxm_mdperson_pln1",
+	"properties": {
+		"description": "Copying person master data from maximo to raw landing zone",
+		"activities": [
+			{
+				"name": "dprawlandz_mxm_mdperson_act",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "raw/landing/maximo/person_20220606.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "select Maximo.person.PERSONID,Maximo.person.FIRSTNAME,Maximo.person.LASTNAME,Maximo.person.STATUS,Maximo.person.DEPARTMENT,Maximo.person.TITLE,Maximo.person.EMPLOYEETYPE,Maximo.person.JOBCODE,Maximo.person.SUPERVISOR,Maximo.person.BIRTHDATE,Maximo.person.HIREDATE,Maximo.person.TERMINATIONDATE,Maximo.person.LOCATION,Maximo.person.LocationSite,Maximo.person.STATUSDATE from Maximo.person\n where date(statusdate) ='@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false
+				},
+				"inputs": [
+					{
+						"referenceName": "dprawlandz_mxm_pers_source_ds1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dprawlandz_mxm_pers_dest_ds1",
+						"type": "DatasetReference",
+						"parameters": {
+							"Output": {
+								"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-21T07:25:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

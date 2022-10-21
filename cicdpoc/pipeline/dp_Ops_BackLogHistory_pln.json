@@ -1,0 +1,45 @@
+{
+	"name": "dp_Ops_BackLogHistory_pln",
+	"properties": {
+		"activities": [
+			{
+				"name": "Ops_BackLogHistory",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.01:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dp_Ops_BackLogHistory_df",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "AzureDataLakeStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "raw-rejects-maximo"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"sourceStagingConcurrency": 1
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMDMpln"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-19T10:57:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,196 @@
+{
+	"name": "AzureSynpMXMSTGWorkOrder1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "PARENT",
+				"type": "varchar"
+			},
+			{
+				"name": "GOVTWONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGID",
+				"type": "varchar"
+			},
+			{
+				"name": "SITEID",
+				"type": "varchar"
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "ASSETNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "JPNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "WORKTYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "TASKID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ISTASK",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "PLUSCJPREVNUM",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WOPRIORITY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "STATUSDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CHANGEBY",
+				"type": "varchar"
+			},
+			{
+				"name": "PMDUEDATE",
+				"type": "date"
+			},
+			{
+				"name": "TARGSTARTDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TARGCOMPDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "REPORTDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "RESPONDBY",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTLABHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "ACTSTART",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTFINISH",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTINTLABHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "ESTDUR",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "WOGROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "PERSONGROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "OWNERGROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "PLUSCFREQUENCY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PLUSCFREQUNIT",
+				"type": "varchar"
+			},
+			{
+				"name": "PMNEXTDUEDATE",
+				"type": "date"
+			},
+			{
+				"name": "PMNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "ENTRY_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_ID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_WORKORDER"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

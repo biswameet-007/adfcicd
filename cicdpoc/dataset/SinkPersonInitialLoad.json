@@ -1,0 +1,90 @@
+{
+	"name": "SinkPersonInitialLoad",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "PERSON_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PERSON_NBR",
+				"type": "varchar"
+			},
+			{
+				"name": "PERSON_FIRST_NM",
+				"type": "varchar"
+			},
+			{
+				"name": "PERSON_LAST_NM",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "DEPARTMENT",
+				"type": "varchar"
+			},
+			{
+				"name": "TITLE",
+				"type": "varchar"
+			},
+			{
+				"name": "EMPLOYEE_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "JOBCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SUPERVISOR",
+				"type": "varchar"
+			},
+			{
+				"name": "BIRTHDATE",
+				"type": "date"
+			},
+			{
+				"name": "HIREDATE",
+				"type": "date"
+			},
+			{
+				"name": "TERMINATIONDATE",
+				"type": "date"
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SRC_TYPE_HASH_KEY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "PERSON"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

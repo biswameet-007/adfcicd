@@ -1,0 +1,492 @@
+{
+	"name": "dp_copy_merge_WO_pln",
+	"properties": {
+		"activities": [
+			{
+				"name": "CopyMergeWOfiles",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:45:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "workorder*.txt",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "MergeFiles"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "WONUM",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WONUM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PARENT",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PARENT",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "GOVTWONUM",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "GOVTWONUM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "JPNUM",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "JPNUM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ASSETNUM",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ASSETNUM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ORGID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ORGID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "SITEID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SITEID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "LOCATION",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "LOCATION",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "STATUS",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "STATUS",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "WORKTYPE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WORKTYPE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TASKID",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TASKID",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ISTASK",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ISTASK",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DESCRIPTION",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DESCRIPTION",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PLUSCJPREVNUM",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PLUSCJPREVNUM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "WOPRIORITY",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WOPRIORITY",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CHANGEDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CHANGEDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "STATUSDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "STATUSDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CHANGEBY",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "CHANGEBY",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PMDUEDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PMDUEDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TARGSTARTDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TARGSTARTDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "TARGCOMPDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TARGCOMPDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "REPORTDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "REPORTDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "RESPONDBY",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "RESPONDBY",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ESTDUR",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ESTDUR",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ACTLABHRS",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ACTLABHRS",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ACTSTART",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ACTSTART",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ACTFINISH",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ACTFINISH",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "ACTINTLABHRS",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ACTINTLABHRS",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "WOGROUP",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WOGROUP",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PERSONGROUP",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PERSONGROUP",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OWNERGROUP",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "OWNERGROUP",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PLUSCFREQUENCY",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PLUSCFREQUENCY",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PLUSCFREQUNIT",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PLUSCFREQUNIT",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PMNEXTDUEDATE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PMNEXTDUEDATE",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PMNUM",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PMNUM",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "srcCopyMergeWOFiles",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "sinkCopyMergeWOFiles",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-10-19T10:57:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

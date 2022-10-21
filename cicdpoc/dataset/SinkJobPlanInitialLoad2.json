@@ -1,0 +1,85 @@
+{
+	"name": "SinkJobPlanInitialLoad2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "JP_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "JP_NUM",
+				"type": "varchar"
+			},
+			{
+				"name": "JP_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "JPDURATION",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 3
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "PRIORITY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "JOBPLANID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DOWNTIME",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LABORCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "PLUSCREVNUM",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SRC_TYPE_HASH_KEY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "JOBPLAN"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

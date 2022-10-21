@@ -1,0 +1,93 @@
+{
+	"name": "dprawlandz_mxm_workorder_pln1",
+	"properties": {
+		"description": "To copy data in bulk for workorder",
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().globalParameters.MaximoHistRangeInput",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "dprawlandz_mxm_wob_cpact",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "Db2Source",
+									"query": {
+										"value": "select Maximo.WorkOrder.WONUM,Maximo.WorkOrder.PARENT,Maximo.WorkOrder.GOVTWONUM,Maximo.WorkOrder.JPNUM,Maximo.WorkOrder.ASSETNUM,Maximo.WorkOrder.ORGID,Maximo.WorkOrder.SITEID,Maximo.WorkOrder.LOCATION,Maximo.WorkOrder.STATUS,Maximo.WorkOrder.WORKTYPE,Maximo.WorkOrder.TASKID,Maximo.WorkOrder.ISTASK,REGEXP_REPLACE(Maximo.WorkOrder.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\"|\\\\|\\/)','') AS DESCRIPTION,Maximo.WorkOrder.PLUSCJPREVNUM,Maximo.WorkOrder.WOPRIORITY,Maximo.WorkOrder.CHANGEDATE,Maximo.WorkOrder.STATUSDATE,Maximo.WorkOrder.CHANGEBY,Maximo.WorkOrder.PMDUEDATE,Maximo.WorkOrder.TARGSTARTDATE,Maximo.WorkOrder.TARGCOMPDATE,Maximo.WorkOrder.REPORTDATE,Maximo.WorkOrder.RESPONDBY,Maximo.WorkOrder.estdur,Maximo.WorkOrder.ACTLABHRS,Maximo.WorkOrder.ACTSTART,Maximo.WorkOrder.ACTFINISH,Maximo.WorkOrder.ACTINTLABHRS,Maximo.WorkOrder.WOGROUP,Maximo.WorkOrder.PERSONGROUP,Maximo.WorkOrder.OWNERGROUP,Maximo.WorkOrder.PLUSCFREQUENCY,Maximo.WorkOrder.PLUSCFREQUNIT,Maximo.WorkOrder.PMNEXTDUEDATE,Maximo.WorkOrder.PMNUM,Maximo.WorkOrder.workorderid from Maximo.WorkOrder \nwhere  date(statusdate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+										"type": "Expression"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": "..csv"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "dprawlandz_mxm_wob_source_ds1",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dprawlandz_mxm_wob_dest_ds1",
+									"type": "DatasetReference",
+									"parameters": {
+										"pDate": {
+											"value": "@concat('workorder_',item().monthname,'_',item().year,'.txt')",
+											"type": "Expression"
+										},
+										"OutputPath": {
+											"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-21T07:25:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,87 @@
+{
+	"name": "dprawlandz_mxm_labtrans_pln1",
+	"properties": {
+		"description": "To copy labor trans from maximo to raw landing zone.",
+		"activities": [
+			{
+				"name": "dprawlandz_mxm_labtrans_cp",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "rawlandingmaximoworkorder/workorder_202206.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "select  Maximo.labtrans.refwo, Maximo.labtrans.siteid, Maximo.labtrans.ORGID, Maximo.labtrans.LOCATION, Maximo.labtrans.transdate,Maximo.labtrans.craft,Maximo.labtrans.laborcode,Maximo.labtrans.payrate,Maximo.labtrans.startdatetime,Maximo.labtrans.finishdatetime,Maximo.labtrans.regularhrs,Maximo.labtrans.startdate,Maximo.labtrans.finishdate,Maximo.labtrans.labtransid from Maximo.labtrans where date(transdate)=  '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"path": "raw/maximo/log"
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dprawlandz_mxm_wo_source_ds21",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dprawlandz_mxm_labtrans_ds1",
+						"type": "DatasetReference",
+						"parameters": {
+							"OutputPath": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-21T07:25:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

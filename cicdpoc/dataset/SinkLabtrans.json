@@ -1,0 +1,162 @@
+{
+	"name": "SinkLabtrans",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "LABTRANS_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOCATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CRAFT_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LAB_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PAYRATE",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "STARTDATETIME",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "FINISHDATETIME",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "REGULARHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "TRANSDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "GOVTWONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "ASSETNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "JPNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "WORKTYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "WOPRIORITY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "STATUSDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TARGCOMPDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "REPORTDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "PMDUEDATE",
+				"type": "date"
+			},
+			{
+				"name": "TARGSTARTDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ESTDUR",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "WOGROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "PERSONGROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "PMNEXTDUEDATE",
+				"type": "date"
+			},
+			{
+				"name": "PMNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "LABTRANS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,17 @@
+{
+	"name": "dprawlandz_mxm_wob_source_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Db2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Maximo",
+			"table": "WorkOrder"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

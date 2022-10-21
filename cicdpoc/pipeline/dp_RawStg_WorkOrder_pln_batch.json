@@ -1,0 +1,52 @@
+{
+	"name": "dp_RawStg_WorkOrder_pln_batch",
+	"properties": {
+		"activities": [
+			{
+				"name": "dpRawStgWorkOrder_df",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.01:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dpRawStgWorkOrder_df_old",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"srcRawStgWorkOrder": {
+								"InputPath": {
+									"value": "@pipeline().globalParameters.MaximoLandingPath",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "AzureDataLakeStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "raw-rejects-maximo"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMSTGpln"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-19T10:57:12Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

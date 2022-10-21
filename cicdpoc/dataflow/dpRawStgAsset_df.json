@@ -1,0 +1,93 @@
+{
+	"name": "dpRawStgAsset_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcRawStgAsset_ds",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawStgAsset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynpMXMSTGAsset",
+						"type": "DatasetReference"
+					},
+					"name": "sinkRawStgAsset",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCRawStgAsset"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          INSTALLDATE as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          CHANGEDATE as timestamp 'yyyy.MM.dd HH:mm:ss'",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawStgAsset",
+				"srcRawStgAsset derive(ENTRY_DT = currentTimestamp(),",
+				"          ASSETNUM = iifNull(ASSETNUM, 'NA', ASSETNUM),",
+				"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+				"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+				"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+				"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+				"          CHANGEDATE = iifNull(CHANGEDATE, toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'),CHANGEDATE)) ~> dCRawStgAsset",
+				"dCRawStgAsset sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          INSTALLDATE as date,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          CHANGEDATE as timestamp,",
+				"          ENTRY_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ASSETNUM,",
+				"          ASSETTAG,",
+				"          LOCATION,",
+				"          DESCRIPTION,",
+				"          INSTALLDATE,",
+				"          SITEID,",
+				"          ORGID,",
+				"          CHANGEDATE,",
+				"          ENTRY_DT",
+				"     )) ~> sinkRawStgAsset"
+			]
+		}
+	}
+}

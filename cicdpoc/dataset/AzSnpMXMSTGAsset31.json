@@ -1,0 +1,54 @@
+{
+	"name": "AzSnpMXMSTGAsset31",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ASSETNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "INSTALLDATE",
+				"type": "date"
+			},
+			{
+				"name": "SITEID",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGID",
+				"type": "varchar"
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ENTRY_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_ASSET"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,93 @@
+{
+	"name": "dprawlandz_mxm_mdasset_pln1",
+	"properties": {
+		"description": "Pipline to transfer maximo Asset to raw landing zone.",
+		"activities": [
+			{
+				"name": "dprawlandz_mxm_mdasset_act",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "raw/landing/maximo/asset_20220606.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "select Maximo.Asset.ASSETNUM,Maximo.Asset.ASSETTAG, Maximo.Asset.LOCATION,REGEXP_REPLACE(Maximo.Asset.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Asset.InstallDate,Maximo.asset.siteid,Maximo.Asset.orgid,Maximo.Asset.changedate from Maximo.Asset\nwhere date(changedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"path": {
+								"value": "@pipeline().globalParameters.MaximoLog",
+								"type": "Expression"
+							}
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dp_rawlandz_mxm_asset_source_ds1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dp_rawlandz_mxm_asset_dest_ds1",
+						"type": "DatasetReference",
+						"parameters": {
+							"Output": {
+								"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-21T07:25:27Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

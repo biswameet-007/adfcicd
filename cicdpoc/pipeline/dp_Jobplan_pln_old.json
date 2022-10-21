@@ -1,0 +1,48 @@
+{
+	"name": "dp_Jobplan_pln_old",
+	"properties": {
+		"activities": [
+			{
+				"name": "dp_JobPlan_Dim",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dp_Jobplan_Dim_df1",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "AzureDataLakeStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": {
+							"value": "@pipeline().globalParameters.MaximoLog",
+							"type": "Expression"
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "AzureIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine",
+					"sourceStagingConcurrency": 1
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMDWpln"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-10-19T10:57:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

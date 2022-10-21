@@ -1,0 +1,90 @@
+{
+	"name": "CopySrcLabtrans1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"LandingPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "labtrans*.txt",
+				"folderPath": {
+					"value": "@dataset().LandingPath",
+					"type": "Expression"
+				},
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "REFWO",
+				"type": "String"
+			},
+			{
+				"name": "SITEID",
+				"type": "String"
+			},
+			{
+				"name": "ORGID",
+				"type": "String"
+			},
+			{
+				"name": "LOCATION",
+				"type": "String"
+			},
+			{
+				"name": "TRANSDATE",
+				"type": "String"
+			},
+			{
+				"name": "CRAFT",
+				"type": "String"
+			},
+			{
+				"name": "LABORCODE",
+				"type": "String"
+			},
+			{
+				"name": "PAYRATE",
+				"type": "String"
+			},
+			{
+				"name": "STARTDATETIME",
+				"type": "String"
+			},
+			{
+				"name": "FINISHDATETIME",
+				"type": "String"
+			},
+			{
+				"name": "REGULARHRS",
+				"type": "String"
+			},
+			{
+				"name": "STARTDATE",
+				"type": "String"
+			},
+			{
+				"name": "FINISHDATE",
+				"type": "String"
+			},
+			{
+				"name": "LABTRANSID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
