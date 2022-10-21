@@ -1,0 +1,258 @@
+{
+	"name": "SinkOperationLd21",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "OPERATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "PARENT",
+				"type": "varchar"
+			},
+			{
+				"name": "GOVTWONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOCATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ASSET_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PERSON_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "JP_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PERSON_GROUP_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "WORKTYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "TASKID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ISTASK",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "PLUSCJREVNUM",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "WOPRIORITY",
+				"type": "varchar"
+			},
+			{
+				"name": "WO_CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_STATUS_CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_STATUS_CHANGEBY",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUSDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "PMDUEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TARGSTARTDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TARGCOMPDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "REPORTDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTLABHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "ACTSTART",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTFINISH",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTINTLABHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "ESTDUR",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "WOGROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "PERSON_GROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "CAL_PMDUEDT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WORKTYPE_CM_PM",
+				"type": "varchar"
+			},
+			{
+				"name": "REPORTMONTH_YEAR",
+				"type": "varchar"
+			},
+			{
+				"name": "REPORTDATE_MONTH",
+				"type": "varchar"
+			},
+			{
+				"name": "REPORTDATE_CM_PM",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "PLUSCFREQUENCY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PLUSCFREQUNIT",
+				"type": "varchar"
+			},
+			{
+				"name": "PMNEXTDUEDATE",
+				"type": "date"
+			},
+			{
+				"name": "PMNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "AVAILABLE_MANHOUR",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PARENT_ACTLABHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "SNAPSHOT_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CURRENT_RECORD_IND",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "STATUS_FLAG",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "OPERATION"
+		}
+	}
+}

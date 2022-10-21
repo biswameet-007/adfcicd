@@ -1,0 +1,46 @@
+{
+	"name": "dp_Update_Parent_ActLabHrs_Ops_pln1",
+	"properties": {
+		"activities": [
+			{
+				"name": "dp_Update_Parent_ActLabHrs_Ops_df",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.01:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dp_Update_Parent_ActLabHrs_Ops_df1",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "AzureDataLakeStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": {
+							"value": "@pipeline().globalParameters.MaximoLog",
+							"type": "Expression"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMDW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-29T07:13:23Z"
+	}
+}

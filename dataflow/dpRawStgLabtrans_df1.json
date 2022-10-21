@@ -1,0 +1,127 @@
+{
+	"name": "dpRawStgLabtrans_df1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "RawSrc_Labtrans_ds1",
+						"type": "DatasetReference"
+					},
+					"name": "RawSrcLabTrans"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkStgLabTrans1",
+						"type": "DatasetReference"
+					},
+					"name": "sinkStgLabTrans"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dcRawStgLabTrans"
+				},
+				{
+					"name": "selRawStgLabTrans"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          REFWO as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOCATION as string,",
+				"          TRANSDATE as string,",
+				"          CRAFT as string,",
+				"          LABORCODE as string,",
+				"          PAYRATE as string,",
+				"          STARTDATETIME as string,",
+				"          FINISHDATETIME as string,",
+				"          REGULARHRS as string,",
+				"          STARTDATE as string,",
+				"          FINISHDATE as string,",
+				"          LABTRANSID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> RawSrcLabTrans",
+				"RawSrcLabTrans derive(ENTRY_DT = currentTimestamp(),",
+				"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+				"          REFWO = iifNull(REFWO, 'NA', REFWO),",
+				"          STARTDATETIME = toTimestamp(substring(STARTDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          FINISHDATETIME = toTimestamp(substring(FINISHDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          STARTDATE = toTimestamp(substring(STARTDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          FINISHDATE = toTimestamp(substring(FINISHDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          TRANSDATE = toTimestamp(substring(TRANSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLabTrans",
+				"dcRawStgLabTrans select(mapColumn(",
+				"          REFWO,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LOCATION,",
+				"          TRANSDATE,",
+				"          CRAFT,",
+				"          PAYRATE,",
+				"          STARTDATETIME,",
+				"          FINISHDATETIME,",
+				"          REGULARHRS,",
+				"          STARTDATE,",
+				"          FINISHDATE,",
+				"          LABTRANSID,",
+				"          ENTRY_DT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selRawStgLabTrans",
+				"selRawStgLabTrans sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          REFWO as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOCATION as string,",
+				"          PAYRATE as decimal(18,2),",
+				"          CRAFT as string,",
+				"          STARTDATETIME as timestamp,",
+				"          FINISHDATETIME as timestamp,",
+				"          REGULARHRS as decimal(18,9),",
+				"          STARTDATE as date,",
+				"          FINISHDATE as date,",
+				"          TRANSDATE as timestamp,",
+				"          LAB_ID as integer,",
+				"          ENTRY_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          REFWO,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LOCATION,",
+				"          PAYRATE,",
+				"          CRAFT,",
+				"          STARTDATETIME,",
+				"          FINISHDATETIME,",
+				"          REGULARHRS,",
+				"          STARTDATE,",
+				"          FINISHDATE,",
+				"          TRANSDATE,",
+				"          LAB_ID = LABTRANSID,",
+				"          ENTRY_DT",
+				"     )) ~> sinkStgLabTrans"
+			]
+		}
+	}
+}

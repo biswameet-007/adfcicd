@@ -1,0 +1,40 @@
+{
+	"name": "OrgSiteRefRd21",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_NBR",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGANIZATION_NM",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGANIZATION_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "ORGANIZATION"
+		}
+	}
+}

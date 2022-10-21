@@ -1,0 +1,171 @@
+{
+	"name": "sinkOperationSmryLd",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "OPERATION_SUMMARY_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WORK_ORDER",
+				"type": "varchar"
+			},
+			{
+				"name": "GOVT_WO",
+				"type": "varchar"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOCATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "ASSET",
+				"type": "varchar"
+			},
+			{
+				"name": "REPORTED_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "PRIORITY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "WO_STATUS_CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TARGET_START_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TARGET_FINISH_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ACTLABHRS",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "WORK_GROUP",
+				"type": "varchar"
+			},
+			{
+				"name": "WORK_TYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "PM_DUE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SITE",
+				"type": "varchar"
+			},
+			{
+				"name": "WO_OPEN_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_DUE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_PRIORITY_THRESHOLD_DAYS",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WO_CLOSE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_AGE",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 4
+			},
+			{
+				"name": "WO_AGE_SEGMENT",
+				"type": "varchar"
+			},
+			{
+				"name": "WORK_TYPE_CM_PM",
+				"type": "varchar"
+			},
+			{
+				"name": "PERSON_GROUP_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IS_BACKLOG",
+				"type": "char"
+			},
+			{
+				"name": "SNAPSHOT_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SRC_TYPE_HASH_KEY",
+				"type": "varchar"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDM",
+			"table": "OPERATION_SUMMARY"
+		}
+	}
+}

@@ -1,0 +1,105 @@
+{
+	"name": "dpRawStgPerson_df1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcRawStgPerson_ds1",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawStgPerson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynpMXMSTGPerson1",
+						"type": "DatasetReference"
+					},
+					"name": "sinkRawStgPerson"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCRawStgPerson"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PERSONID as string,",
+				"          FIRSTNAME as string,",
+				"          LASTNAME as string,",
+				"          STATUS as string,",
+				"          DEPARTMENT as string,",
+				"          TITLE as string,",
+				"          EMPLOYEETYPE as string,",
+				"          JOBCODE as string,",
+				"          SUPERVISOR as string,",
+				"          BIRTHDATE as string,",
+				"          HIREDATE as string,",
+				"          TERMINATIONDATE as string,",
+				"          LOCATION as string,",
+				"          LOCATIONSITE as string,",
+				"          STATUSDATE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true,",
+				"     partitionBy('hash', 1)) ~> srcRawStgPerson",
+				"srcRawStgPerson derive(ENTRY_DT = currentTimestamp(),",
+				"          LOCATIONSITE = iifNull(LOCATIONSITE, 'NA', LOCATIONSITE)) ~> dCRawStgPerson",
+				"dCRawStgPerson sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PERSONUID as integer,",
+				"          PERSONID as string,",
+				"          FIRSTNAME as string,",
+				"          LASTNAME as string,",
+				"          STATUS as string,",
+				"          DEPARTMENT as string,",
+				"          TITLE as string,",
+				"          EMPLOYEETYPE as string,",
+				"          JOBCODE as string,",
+				"          SUPERVISOR as string,",
+				"          BIRTHDATE as date,",
+				"          HIREDATE as date,",
+				"          TERMINATIONDATE as date,",
+				"          LOCATION as string,",
+				"          LOCATIONSITE as string,",
+				"          STATUSDATE as timestamp,",
+				"          ENTRY_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PERSONID,",
+				"          FIRSTNAME,",
+				"          LASTNAME,",
+				"          STATUS,",
+				"          DEPARTMENT,",
+				"          TITLE,",
+				"          EMPLOYEETYPE,",
+				"          JOBCODE,",
+				"          SUPERVISOR,",
+				"          BIRTHDATE,",
+				"          HIREDATE,",
+				"          TERMINATIONDATE,",
+				"          LOCATION,",
+				"          LOCATIONSITE,",
+				"          STATUSDATE,",
+				"          ENTRY_DT",
+				"     )) ~> sinkRawStgPerson"
+			]
+		}
+	}
+}

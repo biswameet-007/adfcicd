@@ -1,0 +1,151 @@
+{
+	"name": "dp_RawStg_Master_pln1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute Asset STG",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_Asset_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Locations STG",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Asset STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_Locations_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Jobplan STG",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Locations STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_JobPlan_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Person STG",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Jobplan STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_Person_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute WorkOrder STG",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Person STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_WorkOrder_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute WOStatus STG",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute WorkOrder STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_WoStatus_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Labtrans",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute WOStatus STG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_Labtrans_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"concurrency": 12,
+		"policy": {
+			"elapsedTimeMetric": {
+				"duration": "0.0:30:00"
+			}
+		},
+		"folder": {
+			"name": "MXMSTG"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-29T07:13:23Z"
+	}
+}

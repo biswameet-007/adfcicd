@@ -1,0 +1,306 @@
+{
+	"name": "dp_Locations_Dim_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "srcLocationsRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "ExistingRecordsRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MaxKey"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkLocationsLoad",
+						"type": "DatasetReference"
+					},
+					"name": "sinkLocationsLoad"
+				},
+				{
+					"dataset": {
+						"referenceName": "sinkLocationsLoad",
+						"type": "DatasetReference"
+					},
+					"name": "sinkUpdateItem"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selExistingRecords"
+				},
+				{
+					"name": "lkpLocOrgSite"
+				},
+				{
+					"name": "dcNewHashKey"
+				},
+				{
+					"name": "existsLoc"
+				},
+				{
+					"name": "ConsplitLoc"
+				},
+				{
+					"name": "joinLocMaxKey"
+				},
+				{
+					"name": "surrogateKeyLoc"
+				},
+				{
+					"name": "dcNewItem"
+				},
+				{
+					"name": "selNewItem"
+				},
+				{
+					"name": "lkpExistRecords"
+				},
+				{
+					"name": "selUpdateItem"
+				},
+				{
+					"name": "alterRowUpdateItem"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          TYPE as string,",
+				"          CHANGEBY as string,",
+				"          CHANGEDATE as timestamp,",
+				"          STATUS as string,",
+				"          STATUSDATE as timestamp,",
+				"          SITEID as string,",
+				"          ORGID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT LOCATION,\\nDESCRIPTION,\\nTYPE,\\nCHANGEBY,\\nCHANGEDATE,\\nSTATUS,\\nSTATUSDATE,\\nSITEID,\\nORGID\\nFROM MXMSTG.STG_LOCATIONS',",
+				"     format: 'query',",
+				"     staged: true) ~> srcLocationsRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_ID as integer,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,O.ORGANIZATION_NM AS ORGANIZATION_NM, S.SITE_ID AS SITE_ID,S.SITE_NM AS SITE_NM\\nFROM MXMDW.ORGANIZATION O,\\nMXMDW.SITE S\\nWHERE O.ORGANIZATION_ID = S.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          LOCATION_ID as integer,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          TYPE as string,",
+				"          STATUS as string,",
+				"          SITE_ID as integer,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT LOCATION_ID,LOCATION,DESCRIPTION,TYPE,STATUS,SITE_ID,SRC_TYPE_HASH_KEY\\nFROM MXMDW.LOCATIONS',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistingRecordsRead",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(LOCATION_ID),0) FROM MXMDW.LOCATIONS',",
+				"     format: 'query',",
+				"     staged: true) ~> MaxKey",
+				"ExistingRecordsRead select(mapColumn(",
+				"          ExistLOCATION = LOCATION,",
+				"          ExistLOCATION_ID = LOCATION_ID,",
+				"          ExistSITE_ID = SITE_ID,",
+				"          ExistDESCRIPTION = DESCRIPTION,",
+				"          ExistTYPE = TYPE,",
+				"          ExistSTATUS = STATUS,",
+				"          ExistSRC_TYPE_HASH_KEY = SRC_TYPE_HASH_KEY",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistingRecords",
+				"srcLocationsRead, OrgSiteRefRead lookup(ORGID == ORGANIZATION_NM",
+				"     && SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpLocOrgSite",
+				"lkpLocOrgSite derive(SRC_TYPE_HASH_KEY = sha2(256,LOCATION,DESCRIPTION,TYPE,STATUS)) ~> dcNewHashKey",
+				"dcNewHashKey, selExistingRecords exists(LOCATION == ExistLOCATION",
+				"     && DESCRIPTION == ExistDESCRIPTION",
+				"     && TYPE == ExistTYPE",
+				"     && STATUS == ExistSTATUS",
+				"     && SRC_TYPE_HASH_KEY == ExistSRC_TYPE_HASH_KEY,",
+				"     negate:true,",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'right')~> existsLoc",
+				"lkpExistRecords split(isNull(ExistLOCATION_ID),",
+				"     disjoint: false,",
+				"     partitionBy('hash', 1)) ~> ConsplitLoc@(NewItem, UpdateItem)",
+				"ConsplitLoc@NewItem, MaxKey join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> joinLocMaxKey",
+				"joinLocMaxKey keyGenerate(output(MaxLOCATION_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyLoc",
+				"surrogateKeyLoc derive(EFFECTIVE_DT = currentTimestamp(),",
+				"          LOCATION_ID = toInteger(MAXKEY + MaxLOCATION_ID)) ~> dcNewItem",
+				"dcNewItem select(mapColumn(",
+				"          LOCATION,",
+				"          DESCRIPTION,",
+				"          TYPE,",
+				"          CHANGEBY,",
+				"          CHANGEDATE,",
+				"          STATUS,",
+				"          STATUSDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          EFFECTIVE_DT,",
+				"          LOCATION_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selNewItem",
+				"existsLoc, selExistingRecords lookup(LOCATION == ExistLOCATION",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> lkpExistRecords",
+				"ConsplitLoc@UpdateItem select(mapColumn(",
+				"          LOCATION,",
+				"          SITE_ID,",
+				"          DESCRIPTION,",
+				"          TYPE,",
+				"          CHANGEBY,",
+				"          CHANGEDATE,",
+				"          STATUS,",
+				"          STATUSDATE,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          ExistSRC_TYPE_HASH_KEY,",
+				"          ExistLOCATION,",
+				"          ExistSITE_ID",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selUpdateItem",
+				"selUpdateItem alterRow(updateIf(1==1)) ~> alterRowUpdateItem",
+				"selNewItem sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          LOCATION_ID as integer,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          TYPE as string,",
+				"          CHANGEBY as string,",
+				"          CHANGEDATE as timestamp,",
+				"          STATUS as string,",
+				"          STATUSDATE as timestamp,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          LOCATION_ID,",
+				"          LOCATION,",
+				"          DESCRIPTION,",
+				"          TYPE,",
+				"          CHANGEBY,",
+				"          CHANGEDATE,",
+				"          STATUS,",
+				"          STATUSDATE,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkLocationsLoad",
+				"alterRowUpdateItem sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          LOCATION_ID as integer,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          TYPE as string,",
+				"          CHANGEBY as string,",
+				"          CHANGEDATE as timestamp,",
+				"          STATUS as string,",
+				"          STATUSDATE as timestamp,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['LOCATION'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          LOCATION = ExistLOCATION,",
+				"          SITE_ID = ExistSITE_ID,",
+				"          DESCRIPTION,",
+				"          TYPE,",
+				"          CHANGEBY,",
+				"          CHANGEDATE,",
+				"          STATUS,",
+				"          STATUSDATE,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkUpdateItem"
+			]
+		}
+	}
+}

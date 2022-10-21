@@ -1,0 +1,85 @@
+{
+	"name": "dpRawStgWoStatus_df1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcRawStgWoStatus_ds1",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawStgWoStatus"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynpMXMSTGWoStatus1",
+						"type": "DatasetReference"
+					},
+					"name": "sinkRawStgWoStatus"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCRawStgWoStatus"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          STATUS as string,",
+				"          CHANGEDATE as string,",
+				"          CHANGEBY as string,",
+				"          ORGID as string,",
+				"          SITEID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawStgWoStatus",
+				"srcRawStgWoStatus derive(ENTRY_DT = currentTimestamp(),",
+				"          STATUS = iifNull(STATUS, 'NA', STATUS),",
+				"          CHANGEDATE = iifNull(toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')),",
+				"          CHANGEBY = iifNull(CHANGEBY, 'NA', CHANGEBY),",
+				"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+				"          SITEID = iifNull(SITEID, 'NA', SITEID)) ~> dCRawStgWoStatus",
+				"dCRawStgWoStatus sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          STATUS as string,",
+				"          CHANGEDATE as timestamp,",
+				"          CHANGEBY as string,",
+				"          ORGID as string,",
+				"          SITEID as string,",
+				"          ENTRY_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          WONUM,",
+				"          PARENT,",
+				"          STATUS,",
+				"          CHANGEDATE,",
+				"          CHANGEBY,",
+				"          ORGID,",
+				"          SITEID,",
+				"          ENTRY_DT",
+				"     )) ~> sinkRawStgWoStatus"
+			]
+		}
+	}
+}

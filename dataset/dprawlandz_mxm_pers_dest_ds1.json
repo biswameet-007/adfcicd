@@ -1,0 +1,35 @@
+{
+	"name": "dprawlandz_mxm_pers_dest_ds1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Output": {
+				"type": "string",
+				"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('person_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().Output",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

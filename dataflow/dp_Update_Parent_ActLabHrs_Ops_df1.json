@@ -1,0 +1,125 @@
+{
+	"name": "dp_Update_Parent_ActLabHrs_Ops_df1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd7",
+						"type": "DatasetReference"
+					},
+					"name": "UpdateParentActLabHrsOps"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkOperationLd22",
+						"type": "DatasetReference"
+					},
+					"name": "sinkUpdateParentActLabHrs"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filterActLabHrs"
+				},
+				{
+					"name": "aggActLabHrs"
+				},
+				{
+					"name": "alterRowActLabHrs"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          SITE_ID as integer,",
+				"          ISTASK as integer,",
+				"          ACTLABHRS as decimal(18,9)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT DISTINCT WONUM, PARENT,SITE_ID,ISTASK,ACTLABHRS FROM MXMDW.OPERATION WHERE ACTLABHRS>0 AND CURRENT_RECORD_IND=1',",
+				"     format: 'query',",
+				"     staged: true) ~> UpdateParentActLabHrsOps",
+				"UpdateParentActLabHrsOps filter(ISTASK==1) ~> filterActLabHrs",
+				"filterActLabHrs aggregate(groupBy(PARENT,",
+				"          SITE_ID),",
+				"     SumACTLABHRS = sum(ACTLABHRS)) ~> aggActLabHrs",
+				"aggActLabHrs alterRow(updateIf(1==1)) ~> alterRowActLabHrs",
+				"alterRowActLabHrs sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          OPERATION_ID as integer,",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          GOVTWONUM as string,",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          LOCATION_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          PERSON_ID as integer,",
+				"          JP_ID as integer,",
+				"          PERSON_GROUP_ID as integer,",
+				"          STATUS as string,",
+				"          WORKTYPE as string,",
+				"          TASKID as integer,",
+				"          ISTASK as integer,",
+				"          DESCRIPTION as string,",
+				"          PLUSCJREVNUM as integer,",
+				"          WOPRIORITY as string,",
+				"          WO_CHANGEDATE as timestamp,",
+				"          WO_STATUS_CHANGEDATE as timestamp,",
+				"          WO_STATUS_CHANGEBY as string,",
+				"          STATUSDATE as timestamp,",
+				"          PMDUEDATE as timestamp,",
+				"          TARGSTARTDATE as timestamp,",
+				"          TARGCOMPDATE as timestamp,",
+				"          REPORTDATE as timestamp,",
+				"          ACTLABHRS as decimal(18,9),",
+				"          ACTSTART as timestamp,",
+				"          ACTFINISH as timestamp,",
+				"          ACTINTLABHRS as decimal(18,9),",
+				"          ESTDUR as decimal(18,9),",
+				"          WOGROUP as string,",
+				"          PERSON_GROUP as string,",
+				"          CAL_PMDUEDT as timestamp,",
+				"          WORKTYPE_CM_PM as string,",
+				"          REPORTMONTH_YEAR as string,",
+				"          REPORTDATE_MONTH as string,",
+				"          REPORTDATE_CM_PM as timestamp,",
+				"          PLUSCFREQUENCY as integer,",
+				"          PLUSCFREQUNIT as string,",
+				"          PMNEXTDUEDATE as date,",
+				"          PMNUM as string,",
+				"          AVAILABLE_MANHOUR as integer,",
+				"          PARENT_ACTLABHRS as decimal(18,9),",
+				"          SNAPSHOT_DATE as timestamp,",
+				"          CURRENT_RECORD_IND as integer,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          STATUS_FLAG as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['WONUM','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          WONUM = PARENT,",
+				"          SITE_ID,",
+				"          PARENT_ACTLABHRS = SumACTLABHRS",
+				"     )) ~> sinkUpdateParentActLabHrs"
+			]
+		}
+	}
+}

@@ -1,0 +1,336 @@
+{
+	"name": "dp_Jobplan_Dim_df2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynpMxmStgRefnAsset2",
+						"type": "DatasetReference"
+					},
+					"name": "srcJobPlanRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "AzSnpMXMSTGAsset2",
+						"type": "DatasetReference"
+					},
+					"name": "RefOrgJP"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd4",
+						"type": "DatasetReference"
+					},
+					"name": "JobplanExistingRowRd"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd4",
+						"type": "DatasetReference"
+					},
+					"name": "MaxKey"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkJobPlanInitialLoad2",
+						"type": "DatasetReference"
+					},
+					"name": "sinkJPInitLd"
+				},
+				{
+					"dataset": {
+						"referenceName": "SinkJobPlanInitialLoad2",
+						"type": "DatasetReference"
+					},
+					"name": "sinkJobPlanUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lkpJobPlanOrgSite"
+				},
+				{
+					"name": "selJobPlanInsert"
+				},
+				{
+					"name": "selJobplanExistRows"
+				},
+				{
+					"name": "existsJobPlan"
+				},
+				{
+					"name": "lkpJobPlanExistRow"
+				},
+				{
+					"name": "splitJobPlan"
+				},
+				{
+					"name": "joinJobPlanMaxKey"
+				},
+				{
+					"name": "surrogateKeyJobPlan"
+				},
+				{
+					"name": "dcJobPlanInsert"
+				},
+				{
+					"name": "alterRowJobPlanInsert"
+				},
+				{
+					"name": "selJobPlanUpdate"
+				},
+				{
+					"name": "dcJobPlanUpdate"
+				},
+				{
+					"name": "alterRowJobPlanUpdate"
+				},
+				{
+					"name": "dcNewHashKey"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          JP_NUM as string,",
+				"          JP_DESC as string,",
+				"          JPDURATION as decimal(10,3),",
+				"          STATUS as string,",
+				"          PRIORITY as integer,",
+				"          JOBPLANID as integer,",
+				"          DOWNTIME as integer,",
+				"          LABORCODE as string,",
+				"          PLUSCREVNUM as integer,",
+				"          SITEID as string,",
+				"          ORGID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT JPNUM AS JP_NUM,DESCRIPTION AS JP_DESC,JPDURATION,STATUS,PRIORITY,JOBPLANID,\\nDOWNTIME,LABORCODE,PLUSCREVNUM,SITEID,ORGID FROM MXMSTG.STG_JOBPLAN',",
+				"     format: 'query',",
+				"     staged: true,",
+				"     partitionBy('hash', 1)) ~> srcJobPlanRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID,S.SITE_ID,O.ORGANIZATION_NM,S.SITE_NM\\nFROM\\nMXMDW.ORGANIZATION O,\\nMXMDW.SITE S\\nWHERE\\nS.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> RefOrgJP",
+				"source(output(",
+				"          JP_ID as integer,",
+				"          JOBPLANID as integer,",
+				"          JP_NUM as string,",
+				"          JP_DESC as string,",
+				"          JPDURATION as decimal(10,3),",
+				"          STATUS as string,",
+				"          PRIORITY as integer,",
+				"          LABORCODE as string,",
+				"          PLUSCREVNUM as short,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT JP_ID,JOBPLANID,JP_NUM,JP_DESC,JPDURATION,STATUS,PRIORITY,LABORCODE,PLUSCREVNUM,SRC_TYPE_HASH_KEY FROM MXMDW.JOBPLAN',",
+				"     format: 'query',",
+				"     staged: true,",
+				"     partitionBy('hash', 1)) ~> JobplanExistingRowRd",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(JP_ID),0) FROM MXMDW.JOBPLAN',",
+				"     format: 'query',",
+				"     staged: true,",
+				"     partitionBy('hash', 1)) ~> MaxKey",
+				"srcJobPlanRead, RefOrgJP lookup(ORGID == ORGANIZATION_NM",
+				"     && SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> lkpJobPlanOrgSite",
+				"dcJobPlanInsert select(mapColumn(",
+				"          JP_NUM,",
+				"          JP_DESC,",
+				"          JPDURATION,",
+				"          STATUS,",
+				"          PRIORITY,",
+				"          JOBPLANID,",
+				"          DOWNTIME,",
+				"          LABORCODE,",
+				"          PLUSCREVNUM,",
+				"          EFFECTIVE_DT,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          NewJP_ID,",
+				"          SRC_TYPE_HASH_KEY",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selJobPlanInsert",
+				"JobplanExistingRowRd select(mapColumn(",
+				"          ExistJP_ID = JP_ID,",
+				"          ExistJOBPLANID = JOBPLANID,",
+				"          ExistJP_NUM = JP_NUM,",
+				"          ExistSRC_TYPE_HASH_KEY = SRC_TYPE_HASH_KEY",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selJobplanExistRows",
+				"dcNewHashKey, selJobplanExistRows exists(JOBPLANID == ExistJOBPLANID",
+				"     && JP_NUM == ExistJP_NUM,",
+				"     negate:true,",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'right')~> existsJobPlan",
+				"existsJobPlan, selJobplanExistRows lookup(JOBPLANID == ExistJOBPLANID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> lkpJobPlanExistRow",
+				"lkpJobPlanExistRow split(isNull(ExistJP_ID),",
+				"     disjoint: false,",
+				"     partitionBy('hash', 1)) ~> splitJobPlan@(NewItem, UpdateItem)",
+				"splitJobPlan@NewItem, MaxKey join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> joinJobPlanMaxKey",
+				"joinJobPlanMaxKey keyGenerate(output(NewJP_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L,",
+				"     partitionBy('hash', 1)) ~> surrogateKeyJobPlan",
+				"surrogateKeyJobPlan derive(NewJP_ID = NewJP_ID + MAXKEY,",
+				"          EFFECTIVE_DT = currentTimestamp(),",
+				"     partitionBy('hash', 1)) ~> dcJobPlanInsert",
+				"selJobPlanInsert alterRow(insertIf(1==1),",
+				"     partitionBy('hash', 1)) ~> alterRowJobPlanInsert",
+				"splitJobPlan@UpdateItem select(mapColumn(",
+				"          JP_NUM,",
+				"          JP_DESC,",
+				"          JPDURATION,",
+				"          STATUS,",
+				"          PRIORITY,",
+				"          JOBPLANID,",
+				"          DOWNTIME,",
+				"          LABORCODE,",
+				"          PLUSCREVNUM,",
+				"          SITEID,",
+				"          ORGID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          ExistJP_ID,",
+				"          ExistJOBPLANID",
+				"     ),",
+				"     partitionBy('hash', 1),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selJobPlanUpdate",
+				"selJobPlanUpdate derive(EFFECTIVE_DT = currentTimestamp()) ~> dcJobPlanUpdate",
+				"dcJobPlanUpdate alterRow(updateIf(1==1),",
+				"     partitionBy('hash', 1)) ~> alterRowJobPlanUpdate",
+				"lkpJobPlanOrgSite derive(SRC_TYPE_HASH_KEY = sha2(256,JOBPLANID)) ~> dcNewHashKey",
+				"alterRowJobPlanInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          JP_ID as integer,",
+				"          JP_NUM as string,",
+				"          JP_DESC as string,",
+				"          JPDURATION as decimal(10,3),",
+				"          STATUS as string,",
+				"          PRIORITY as integer,",
+				"          JOBPLANID as integer,",
+				"          DOWNTIME as integer,",
+				"          LABORCODE as string,",
+				"          PLUSCREVNUM as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          JP_NUM,",
+				"          JP_DESC,",
+				"          JPDURATION,",
+				"          STATUS,",
+				"          PRIORITY,",
+				"          JOBPLANID,",
+				"          DOWNTIME,",
+				"          LABORCODE,",
+				"          PLUSCREVNUM,",
+				"          EFFECTIVE_DT,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          JP_ID = NewJP_ID,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkJPInitLd",
+				"alterRowJobPlanUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          JP_ID as integer,",
+				"          JP_NUM as string,",
+				"          JP_DESC as string,",
+				"          JPDURATION as decimal(10,3),",
+				"          STATUS as string,",
+				"          PRIORITY as integer,",
+				"          JOBPLANID as integer,",
+				"          DOWNTIME as integer,",
+				"          LABORCODE as string,",
+				"          PLUSCREVNUM as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['JOBPLANID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          JOBPLANID = ExistJOBPLANID,",
+				"          JP_NUM,",
+				"          JP_DESC,",
+				"          JPDURATION,",
+				"          STATUS,",
+				"          PRIORITY,",
+				"          DOWNTIME,",
+				"          LABORCODE,",
+				"          PLUSCREVNUM,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkJobPlanUpdate"
+			]
+		}
+	}
+}
