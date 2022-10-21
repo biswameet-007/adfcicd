@@ -17,6 +17,10 @@
 			"MaximoOutputPath": {
 				"type": "string",
 				"value": "raw/maximo/output"
+			},
+			"MaximoArchivePath": {
+				"type": "string",
+				"value": " raw/maximo/archive"
 			}
 		}
 	},
