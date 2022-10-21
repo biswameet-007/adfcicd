@@ -66,6 +66,10 @@
 			"Maximorelativeinputpath": {
 				"type": "string",
 				"value": " maximo/input"
+			},
+			"MaximoWorkOrderRecCount": {
+				"type": "string",
+				"value": "0"
 			}
 		}
 	},
