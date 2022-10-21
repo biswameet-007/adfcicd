@@ -29,6 +29,15 @@
 			"MaximoLog": {
 				"type": "string",
 				"value": " raw/maximo/log"
+			},
+			"MaximoHistRangeInput": {
+				"type": "string",
+				"value": [
+					{
+						"monthname": "June",
+						"year": "2021"
+					}
+				]
 			}
 		}
 	},
