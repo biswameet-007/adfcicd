@@ -25,6 +25,10 @@
 			"MaximoDataIngestionOutput": {
 				"type": "string",
 				"value": " raw/maximo/landing"
+			},
+			"MaximoLog": {
+				"type": "string",
+				"value": " raw/maximo/log"
 			}
 		}
 	},
