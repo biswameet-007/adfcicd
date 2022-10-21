@@ -38,6 +38,10 @@
 						"year": "2021"
 					}
 				]
+			},
+			"MaximoStgAssetInput": {
+				"type": "string",
+				"value": " asset_20220727.txt"
 			}
 		}
 	},
