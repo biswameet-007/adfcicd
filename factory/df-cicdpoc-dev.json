@@ -5,6 +5,10 @@
 			"MaximoLandingPath": {
 				"type": "string",
 				"value": "raw/maximo/landing"
+			},
+			"MaximoRejectPath": {
+				"type": "string",
+				"value": " raw/maximo/rejects"
 			}
 		}
 	},
