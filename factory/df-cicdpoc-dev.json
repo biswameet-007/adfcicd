@@ -21,6 +21,10 @@
 			"MaximoArchivePath": {
 				"type": "string",
 				"value": " raw/maximo/archive"
+			},
+			"MaximoDataIngestionOutput": {
+				"type": "string",
+				"value": " raw/maximo/landing"
 			}
 		}
 	},
