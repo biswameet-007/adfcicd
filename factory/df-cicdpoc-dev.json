@@ -50,6 +50,10 @@
 			"MaximoStgLocationInput": {
 				"type": "string",
 				"value": " locations_20220727.txt"
+			},
+			"MaximoStgWorkorderInput": {
+				"type": "string",
+				"value": "workorder_20220804.txt"
 			}
 		}
 	},
