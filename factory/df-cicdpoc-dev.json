@@ -42,6 +42,10 @@
 			"MaximoStgAssetInput": {
 				"type": "string",
 				"value": " asset_20220727.txt"
+			},
+			"MaximoStgPersonInput": {
+				"type": "string",
+				"value": " person_20220727.txt"
 			}
 		}
 	},
