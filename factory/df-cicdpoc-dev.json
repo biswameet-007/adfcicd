@@ -46,6 +46,10 @@
 			"MaximoStgPersonInput": {
 				"type": "string",
 				"value": " person_20220727.txt"
+			},
+			"MaximoStgLocationInput": {
+				"type": "string",
+				"value": " locations_20220727.txt"
 			}
 		}
 	},
