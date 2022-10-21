@@ -1,0 +1,46 @@
+{
+	"name": "AzureSynapseAnalyticsTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "WorkOrder",
+				"type": "char"
+			},
+			{
+				"name": "GovtWO",
+				"type": "char"
+			},
+			{
+				"name": "Description",
+				"type": "char"
+			},
+			{
+				"name": "Location",
+				"type": "char"
+			},
+			{
+				"name": "Asset",
+				"type": "char"
+			},
+			{
+				"name": "ReportedDate",
+				"type": "char"
+			},
+			{
+				"name": "Priority",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "WorkOrderSample"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

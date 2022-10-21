@@ -1,0 +1,82 @@
+{
+	"name": "PersonInitLdStgRd",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "PERSONID",
+				"type": "varchar"
+			},
+			{
+				"name": "FIRSTNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "LASTNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "DEPARTMENT",
+				"type": "varchar"
+			},
+			{
+				"name": "TITLE",
+				"type": "varchar"
+			},
+			{
+				"name": "EMPLOYEETYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "JOBCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SUPERVISOR",
+				"type": "varchar"
+			},
+			{
+				"name": "BIRTHDATE",
+				"type": "date"
+			},
+			{
+				"name": "HIREDATE",
+				"type": "date"
+			},
+			{
+				"name": "TERMINATIONDATE",
+				"type": "date"
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "STATUSDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ENTRY_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_PERSON"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

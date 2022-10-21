@@ -42,6 +42,7 @@
 			"name": "MXMDW"
 		},
 		"annotations": [],
-		"lastPublishTime": "2022-07-11T10:53:43Z"
-	}
+		"lastPublishTime": "2022-10-21T07:25:27Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }

@@ -53,5 +53,6 @@
 			"schema": "MXMSTG",
 			"table": "STG_ASSET"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

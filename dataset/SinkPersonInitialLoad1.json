@@ -85,5 +85,6 @@
 			"schema": "MXMDW",
 			"table": "PERSON"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

@@ -12,5 +12,6 @@
 			"schema": "MAXIMO",
 			"table": "ASSET"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

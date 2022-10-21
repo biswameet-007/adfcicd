@@ -80,5 +80,6 @@
 			"schema": "MXMDW",
 			"table": "JOBPLAN"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

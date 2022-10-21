@@ -12,5 +12,6 @@
 			"schema": "MAXIMO",
 			"table": "LABTRANS"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

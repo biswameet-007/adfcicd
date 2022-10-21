@@ -82,5 +82,6 @@
 			"schema": "MXMSTG",
 			"table": "STG_LABTRANS"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

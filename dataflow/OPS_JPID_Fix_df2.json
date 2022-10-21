@@ -1,0 +1,208 @@
+{
+	"name": "OPS_JPID_Fix_df2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "sourceJP1"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "workorderRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "sourceJP2",
+					"description": "Import data from Jopplan where Site is null"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkOperationLd",
+						"type": "DatasetReference"
+					},
+					"name": "sinkJPIDFIX"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "lookup2"
+				},
+				{
+					"name": "union1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          JP_ID as integer,",
+				"          JP_NUM as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT JP_ID,JP_NUM,SITE_ID,ORGANIZATION_ID FROM MXMDW.JOBPLAN WHERE STATUS=\\'ACTIVE\\' and SITE_ID>0\\n',",
+				"     format: 'query',",
+				"     staged: true) ~> sourceJP1",
+				"source(output(",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          JPNUM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WONUM,SITE_ID,ORGANIZATION_ID,JPNUM FROM MXMDW.WORKORDER WHERE JPNUM<>\\'NA\\'',",
+				"     format: 'query',",
+				"     staged: true) ~> workorderRead",
+				"source(output(",
+				"          JP_ID as integer,",
+				"          JP_NUM as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT JP_ID,JP_NUM,SITE_ID,ORGANIZATION_ID FROM MXMDW.JOBPLAN WHERE STATUS=\\'ACTIVE\\' and SITE_ID<0',",
+				"     format: 'query',",
+				"     staged: true) ~> sourceJP2",
+				"workorderRead, sourceJP1 lookup(JPNUM == JP_NUM",
+				"     && workorderRead@SITE_ID == sourceJP1@SITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 split(isNull(JP_ID),",
+				"     disjoint: false) ~> split1@(NULLSITEID, NOTNULLSITEID)",
+				"split1@NULLSITEID, sourceJP2 lookup(JPNUM == sourceJP2@JP_NUM",
+				"     && split1@NULLSITEID@ORGANIZATION_ID == sourceJP2@ORGANIZATION_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup2",
+				"select1, select2 union(byName: true)~> union1",
+				"lookup2 select(mapColumn(",
+				"          WONUM,",
+				"          SITE_ID = split1@NULLSITEID@SITE_ID,",
+				"          ORGANIZATION_ID = split1@NULLSITEID@ORGANIZATION_ID,",
+				"          JPNUM,",
+				"          JP_ID = sourceJP2@JP_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"split1@NOTNULLSITEID select(mapColumn(",
+				"          WONUM,",
+				"          SITE_ID = split1@NOTNULLSITEID@SITE_ID,",
+				"          ORGANIZATION_ID = split1@NOTNULLSITEID@ORGANIZATION_ID,",
+				"          JPNUM,",
+				"          JP_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"derivedColumn1 alterRow(updateIf(1==1)) ~> alterRow1",
+				"union1 derive(JP_ID = iifNull(JP_ID, toInteger(-1), JP_ID)) ~> derivedColumn1",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          OPERATION_ID as integer,",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          GOVTWONUM as string,",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          LOCATION_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          PERSON_ID as integer,",
+				"          JP_ID as integer,",
+				"          PERSON_GROUP_ID as integer,",
+				"          STATUS as string,",
+				"          WORKTYPE as string,",
+				"          TASKID as integer,",
+				"          ISTASK as integer,",
+				"          DESCRIPTION as string,",
+				"          PLUSCJREVNUM as integer,",
+				"          WOPRIORITY as string,",
+				"          WO_CHANGEDATE as timestamp,",
+				"          WO_STATUS_CHANGEDATE as timestamp,",
+				"          WO_STATUS_CHANGEBY as string,",
+				"          STATUSDATE as timestamp,",
+				"          PMDUEDATE as timestamp,",
+				"          TARGSTARTDATE as timestamp,",
+				"          TARGCOMPDATE as timestamp,",
+				"          REPORTDATE as timestamp,",
+				"          ACTLABHRS as decimal(18,9),",
+				"          ACTSTART as timestamp,",
+				"          ACTFINISH as timestamp,",
+				"          ACTINTLABHRS as decimal(18,9),",
+				"          ESTDUR as decimal(18,9),",
+				"          WOGROUP as string,",
+				"          PERSON_GROUP as string,",
+				"          CAL_PMDUEDT as timestamp,",
+				"          WORKTYPE_CM_PM as string,",
+				"          REPORTMONTH_YEAR as string,",
+				"          REPORTDATE_MONTH as string,",
+				"          REPORTDATE_CM_PM as timestamp,",
+				"          PLUSCFREQUENCY as integer,",
+				"          PLUSCFREQUNIT as string,",
+				"          PMNEXTDUEDATE as date,",
+				"          PMNUM as string,",
+				"          AVAILABLE_MANHOUR as integer,",
+				"          PARENT_ACTLABHRS as decimal(18,9),",
+				"          SNAPSHOT_DATE as timestamp,",
+				"          CURRENT_RECORD_IND as integer,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          STATUS_FLAG as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['WONUM','SITE_ID','ORGANIZATION_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          WONUM,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          JP_ID",
+				"     )) ~> sinkJPIDFIX"
+			]
+		}
+	}
+}

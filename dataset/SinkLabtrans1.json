@@ -157,5 +157,6 @@
 			"schema": "MXMDW",
 			"table": "LABTRANS"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

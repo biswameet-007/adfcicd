@@ -49,5 +49,6 @@
 			"schema": "MXMSTG",
 			"table": "STG_WOSTATUS"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

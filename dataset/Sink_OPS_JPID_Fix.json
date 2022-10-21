@@ -1,0 +1,17 @@
+{
+	"name": "Sink_OPS_JPID_Fix",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "OPS_JPID_FIX"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

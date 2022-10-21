@@ -70,5 +70,6 @@
 			"schema": "MXMDW",
 			"table": "LOCATIONS"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }

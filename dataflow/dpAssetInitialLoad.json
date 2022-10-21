@@ -1,0 +1,262 @@
+{
+	"name": "dpAssetInitialLoad",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SrcAzureSynpMxmAsset",
+						"type": "DatasetReference"
+					},
+					"name": "SrcstgAssetRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "srcAssetSiteRefRd"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "AssetExistingRecordsRd"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MaxKey"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkAssetInitialLoad",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAssetInsert",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "SinkAssetInitialLoad",
+						"type": "DatasetReference"
+					},
+					"name": "sinkAssetUpd"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dcAsset"
+				},
+				{
+					"name": "lkpAssetSite"
+				},
+				{
+					"name": "selExistingRecords"
+				},
+				{
+					"name": "existsAsset"
+				},
+				{
+					"name": "existsAssetUpd"
+				},
+				{
+					"name": "joinUpd"
+				},
+				{
+					"name": "skAsset"
+				},
+				{
+					"name": "joinMaxKey"
+				},
+				{
+					"name": "selAssetInsert"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpd"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          LOCATION as string,",
+				"          SITEID as string,",
+				"          ASSET_DESCRIPTION as string,",
+				"          INSTALL_DATE as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSETNUM,ASSETTAG,LOCATION,SITEID,DESCRIPTION AS ASSET_DESCRIPTION,INSTALLDATE AS INSTALL_DATE\\nFROM MXMSTG.STG_ASSET',",
+				"     format: 'query',",
+				"     staged: true) ~> SrcstgAssetRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID,S.SITE_ID,O.ORGANIZATION_NM,S.SITE_NM\\nFROM\\nMXMDW.ORGANIZATION O,\\nMXMDW.SITE S\\nWHERE\\nS.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> srcAssetSiteRefRd",
+				"source(output(",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          LOCATION as string,",
+				"          SITE_ID as integer,",
+				"          ASSET_DESCRIPTION as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSET_ID,ASSETNUM,ASSETTAG,LOCATION,SITE_ID,ASSET_DESCRIPTION FROM MXMDW.ASSET',",
+				"     format: 'query',",
+				"     staged: true) ~> AssetExistingRecordsRd",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(ASSET_ID),0) FROM MXMDW.ASSET',",
+				"     format: 'query',",
+				"     staged: true) ~> MaxKey",
+				"skAsset derive(ASSET_ID = MAXKEY + NewAsset_Id,",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dcAsset",
+				"SrcstgAssetRead, srcAssetSiteRefRd lookup(SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpAssetSite",
+				"AssetExistingRecordsRd select(mapColumn(",
+				"          ExistASSET_ID = ASSET_ID,",
+				"          ExistASSETNUM = ASSETNUM,",
+				"          ExistASSETTAG = ASSETTAG,",
+				"          ExistLOCATION = LOCATION,",
+				"          ExistSITE_ID = SITE_ID,",
+				"          ExistASSET_DESCRIPTION = ASSET_DESCRIPTION",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistingRecords",
+				"lkpAssetSite, selExistingRecords exists(ASSETNUM == ExistASSETNUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsAsset",
+				"lkpAssetSite, selExistingRecords exists(ASSETNUM == ExistASSETNUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> existsAssetUpd",
+				"existsAssetUpd, selExistingRecords join(ASSETNUM == ExistASSETNUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinUpd",
+				"joinMaxKey keyGenerate(output(NewAsset_Id as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> skAsset",
+				"existsAsset, MaxKey join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMaxKey",
+				"dcAsset select(mapColumn(",
+				"          ASSETNUM,",
+				"          ASSETTAG,",
+				"          LOCATION,",
+				"          ASSET_DESCRIPTION,",
+				"          INSTALL_DATE,",
+				"          SITE_ID,",
+				"          ASSET_ID,",
+				"          EFFECTIVE_DT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selAssetInsert",
+				"selAssetInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"joinUpd alterRow(updateIf(1==1)) ~> alterRowUpd",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          SITE_ID as integer,",
+				"          LOCATION as string,",
+				"          ASSET_DESCRIPTION as string,",
+				"          INSTALL_DATE as date,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'rawzone',",
+				"     mapColumn(",
+				"          ASSET_ID,",
+				"          ASSETNUM,",
+				"          ASSETTAG,",
+				"          SITE_ID,",
+				"          LOCATION,",
+				"          ASSET_DESCRIPTION,",
+				"          INSTALL_DATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkAssetInsert",
+				"alterRowUpd sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          SITE_ID as integer,",
+				"          LOCATION as string,",
+				"          ASSET_DESCRIPTION as string,",
+				"          INSTALL_DATE as date,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['ASSETNUM','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ASSETTAG,",
+				"          ASSETNUM = ExistASSETNUM,",
+				"          SITE_ID = ExistSITE_ID,",
+				"          LOCATION,",
+				"          ASSET_DESCRIPTION,",
+				"          INSTALL_DATE",
+				"     )) ~> sinkAssetUpd"
+			]
+		}
+	}
+}

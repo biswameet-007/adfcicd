@@ -254,5 +254,6 @@
 			"schema": "MXMDW",
 			"table": "OPERATION"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
