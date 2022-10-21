@@ -62,6 +62,10 @@
 			"Maximorelativelandingpath": {
 				"type": "string",
 				"value": " maximo/landing"
+			},
+			"Maximorelativeinputpath": {
+				"type": "string",
+				"value": " maximo/input"
 			}
 		}
 	},
