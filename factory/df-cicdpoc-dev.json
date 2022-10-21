@@ -1,5 +1,13 @@
 {
 	"name": "df-cicdpoc-dev",
+	"properties": {
+		"globalParameters": {
+			"MaximoLandingPath": {
+				"type": "string",
+				"value": "raw/maximo/landing"
+			}
+		}
+	},
 	"location": "centralus",
 	"identity": {
 		"type": "SystemAssigned",
