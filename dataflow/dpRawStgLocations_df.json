@@ -1,0 +1,88 @@
+{
+	"name": "dpRawStgLocations_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "RawStgLocationsDs",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawLocations"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkStgLocations",
+						"type": "DatasetReference"
+					},
+					"name": "sinkStgLocations"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dcRawStgLocations"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          TYPE as string,",
+				"          CHANGEBY as string,",
+				"          CHANGEDATE as string,",
+				"          STATUS as string,",
+				"          STATUSDATE as string,",
+				"          SITEID as string,",
+				"          ORGID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawLocations",
+				"srcRawLocations derive(ENTRY_DT = currentTimestamp(),",
+				"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          STATUSDATE = toTimestamp(substring(STATUSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLocations",
+				"dcRawStgLocations sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          TYPE as string,",
+				"          CHANGEBY as string,",
+				"          CHANGEDATE as timestamp,",
+				"          STATUS as string,",
+				"          STATUSDATE as timestamp,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          ENTRY_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          LOCATION,",
+				"          DESCRIPTION,",
+				"          TYPE,",
+				"          CHANGEBY,",
+				"          CHANGEDATE,",
+				"          STATUS,",
+				"          STATUSDATE,",
+				"          SITEID,",
+				"          ORGID,",
+				"          ENTRY_DT",
+				"     )) ~> sinkStgLocations"
+			]
+		}
+	}
+}

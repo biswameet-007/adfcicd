@@ -1,0 +1,92 @@
+{
+	"name": "dprawlandz_mxm_loc_pln",
+	"properties": {
+		"description": "To copy location from maximo to raw landing zone.",
+		"activities": [
+			{
+				"name": "dprawlandz_mxm_loc-cp",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "rawlandingmaximoworkorder/workorder_202206.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "select Maximo.Locations.Location,REGEXP_REPLACE(Maximo.Locations.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Locations.type,Maximo.Locations.changeby,Maximo.Locations.changedate,Maximo.Locations.status,Maximo.Locations.Statusdate,Maximo.Locations.siteid,Maximo.locations.orgid from Maximo.Locations\nwhere date(statusdate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"path": {
+								"value": "@pipeline().globalParameters.MaximoLog",
+								"type": "Expression"
+							}
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dprawlandz_mxm_wo_source_ds",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dprawlandz_mxm_wo_dest_ds",
+						"type": "DatasetReference",
+						"parameters": {
+							"Outputpath": {
+								"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-29T07:13:19Z"
+	}
+}

@@ -1,0 +1,57 @@
+{
+	"name": "SinkAssetInitialLoad1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ASSET_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ASSETNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "ASSETTAG",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "ASSET_DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "INSTALL_DATE",
+				"type": "date"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SRC_TYPE_HASH_KEY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "ASSET"
+		}
+	}
+}

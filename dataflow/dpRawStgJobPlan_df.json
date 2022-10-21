@@ -1,0 +1,92 @@
+{
+	"name": "dpRawStgJobPlan_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "src_RawStgJobPlan_ds",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawStgJobplan"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynpMXMSTGJobplan",
+						"type": "DatasetReference"
+					},
+					"name": "sinkRawStgJobplan"
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCRawStgJobPlan"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          JPNUM as string,",
+				"          DESCRIPTION as string,",
+				"          JPDURATION as double '000,000,000.000',",
+				"          STATUS as string,",
+				"          PRIORITY as integer '000',",
+				"          JOBPLANID as integer,",
+				"          DOWNTIME as integer,",
+				"          LABORCODE as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          PERSONGROUP as string,",
+				"          PLUSCREVNUM as integer,",
+				"          PLUSCCHANGEDATE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawStgJobplan",
+				"srcRawStgJobplan derive(ENTRY_DT = currentTimestamp(),",
+				"          JPNUM = iifNull(JPNUM, 'NA', JPNUM),",
+				"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+				"          JPDURATION = iifNull(JPDURATION, toDouble(0.000), JPDURATION),",
+				"          STATUS = iifNull(STATUS, 'NA', STATUS),",
+				"          PRIORITY = iifNull(PRIORITY, toInteger(-1), PRIORITY),",
+				"          JOBPLANID = iifNull(JOBPLANID, toInteger(-1), JOBPLANID),",
+				"          DOWNTIME = iifNull(DOWNTIME, toInteger(-1), DOWNTIME),",
+				"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+				"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+				"          PERSONGROUP = iifNull(PERSONGROUP, 'NA', PERSONGROUP),",
+				"          PLUSCREVNUM = iifNull(PLUSCREVNUM, toInteger(-1), PLUSCREVNUM),",
+				"          PLUSCCHANGEDATE = iifNull(toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'))) ~> dCRawStgJobPlan",
+				"dCRawStgJobPlan sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          JPNUM,",
+				"          DESCRIPTION,",
+				"          JPDURATION,",
+				"          STATUS,",
+				"          PRIORITY,",
+				"          JOBPLANID,",
+				"          DOWNTIME,",
+				"          LABORCODE,",
+				"          SITEID,",
+				"          ORGID,",
+				"          PERSONGROUP,",
+				"          PLUSCREVNUM,",
+				"          PLUSCCHANGEDATE,",
+				"          ENTRY_DT",
+				"     )) ~> sinkRawStgJobplan"
+			]
+		}
+	}
+}

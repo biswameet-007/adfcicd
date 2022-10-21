@@ -1,0 +1,105 @@
+{
+	"name": "dp_Master_Dim_pln1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute Asset Dim",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Asset_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute JobPlan Dim",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Asset Dim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Jobplan_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Location Dim",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute JobPlan Dim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Locations_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Person Dim",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Location Dim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Person_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute WorkOrder Dim",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Person Dim",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Workorder_pln1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMDW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-09-29T07:13:23Z"
+	}
+}
