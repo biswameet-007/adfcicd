@@ -1,0 +1,1240 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-cicdpoc-dev"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_wostatus_src_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "MAXIMO",
+					"table": "WOSTATUS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_wostatus_src_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "MAXIMO",
+					"table": "WOSTATUS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_source_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_source_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "MAXIMO",
+					"table": "LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "MAXIMO",
+					"table": "LABTRANS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds21')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "MAXIMO",
+					"table": "LABTRANS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "MAXIMO",
+					"table": "LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_source_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "Maximo",
+					"table": "WorkOrder"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_source_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Db2Table",
+				"schema": [],
+				"typeProperties": {
+					"schema": "Maximo",
+					"table": "WorkOrder"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgAsset_df')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "srcRawStgAsset_ds",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawStgAsset"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSynpMXMSTGAsset",
+								"type": "DatasetReference"
+							},
+							"name": "sinkRawStgAsset",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "dCRawStgAsset"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ASSETNUM as string,",
+						"          ASSETTAG as string,",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          INSTALLDATE as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          CHANGEDATE as timestamp 'yyyy.MM.dd HH:mm:ss'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> srcRawStgAsset",
+						"srcRawStgAsset derive(ENTRY_DT = currentTimestamp(),",
+						"          ASSETNUM = iifNull(ASSETNUM, 'NA', ASSETNUM),",
+						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+						"          CHANGEDATE = iifNull(CHANGEDATE, toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'),CHANGEDATE)) ~> dCRawStgAsset",
+						"dCRawStgAsset sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ASSETNUM as string,",
+						"          ASSETTAG as string,",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          INSTALLDATE as date,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          CHANGEDATE as timestamp,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ASSETNUM,",
+						"          ASSETTAG,",
+						"          LOCATION,",
+						"          DESCRIPTION,",
+						"          INSTALLDATE,",
+						"          SITEID,",
+						"          ORGID,",
+						"          CHANGEDATE,",
+						"          ENTRY_DT",
+						"     )) ~> sinkRawStgAsset"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgAsset_df1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "srcRawStgAsset_ds1",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawStgAsset"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSynpMXMSTGAsset1",
+								"type": "DatasetReference"
+							},
+							"name": "sinkRawStgAsset",
+							"rejectedDataLinkedService": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "dCRawStgAsset"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ASSETNUM as string,",
+						"          ASSETTAG as string,",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          INSTALLDATE as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          CHANGEDATE as timestamp 'yyyy.MM.dd HH:mm:ss'",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> srcRawStgAsset",
+						"srcRawStgAsset derive(ENTRY_DT = currentTimestamp(),",
+						"          ASSETNUM = iifNull(ASSETNUM, 'NA', ASSETNUM),",
+						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+						"          CHANGEDATE = iifNull(CHANGEDATE, toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'),CHANGEDATE)) ~> dCRawStgAsset",
+						"dCRawStgAsset sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ASSETNUM as string,",
+						"          ASSETTAG as string,",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          INSTALLDATE as date,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          CHANGEDATE as timestamp,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          ASSETNUM,",
+						"          ASSETTAG,",
+						"          LOCATION,",
+						"          DESCRIPTION,",
+						"          INSTALLDATE,",
+						"          SITEID,",
+						"          ORGID,",
+						"          CHANGEDATE,",
+						"          ENTRY_DT",
+						"     )) ~> sinkRawStgAsset"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgJobPlan_df')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "src_RawStgJobPlan_ds",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawStgJobplan"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSynpMXMSTGJobplan",
+								"type": "DatasetReference"
+							},
+							"name": "sinkRawStgJobplan"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dCRawStgJobPlan"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          JPNUM as string,",
+						"          DESCRIPTION as string,",
+						"          JPDURATION as double '000,000,000.000',",
+						"          STATUS as string,",
+						"          PRIORITY as integer '000',",
+						"          JOBPLANID as integer,",
+						"          DOWNTIME as integer,",
+						"          LABORCODE as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          PERSONGROUP as string,",
+						"          PLUSCREVNUM as integer,",
+						"          PLUSCCHANGEDATE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> srcRawStgJobplan",
+						"srcRawStgJobplan derive(ENTRY_DT = currentTimestamp(),",
+						"          JPNUM = iifNull(JPNUM, 'NA', JPNUM),",
+						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+						"          JPDURATION = iifNull(JPDURATION, toDouble(0.000), JPDURATION),",
+						"          STATUS = iifNull(STATUS, 'NA', STATUS),",
+						"          PRIORITY = iifNull(PRIORITY, toInteger(-1), PRIORITY),",
+						"          JOBPLANID = iifNull(JOBPLANID, toInteger(-1), JOBPLANID),",
+						"          DOWNTIME = iifNull(DOWNTIME, toInteger(-1), DOWNTIME),",
+						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+						"          PERSONGROUP = iifNull(PERSONGROUP, 'NA', PERSONGROUP),",
+						"          PLUSCREVNUM = iifNull(PLUSCREVNUM, toInteger(-1), PLUSCREVNUM),",
+						"          PLUSCCHANGEDATE = iifNull(toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'))) ~> dCRawStgJobPlan",
+						"dCRawStgJobPlan sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          JPNUM,",
+						"          DESCRIPTION,",
+						"          JPDURATION,",
+						"          STATUS,",
+						"          PRIORITY,",
+						"          JOBPLANID,",
+						"          DOWNTIME,",
+						"          LABORCODE,",
+						"          SITEID,",
+						"          ORGID,",
+						"          PERSONGROUP,",
+						"          PLUSCREVNUM,",
+						"          PLUSCCHANGEDATE,",
+						"          ENTRY_DT",
+						"     )) ~> sinkRawStgJobplan"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgJobPlan_df1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "src_RawStgJobPlan_ds1",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawStgJobplan"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSynpMXMSTGJobplan1",
+								"type": "DatasetReference"
+							},
+							"name": "sinkRawStgJobplan"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dCRawStgJobPlan"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          JPNUM as string,",
+						"          DESCRIPTION as string,",
+						"          JPDURATION as double '000,000,000.000',",
+						"          STATUS as string,",
+						"          PRIORITY as integer '000',",
+						"          JOBPLANID as integer,",
+						"          DOWNTIME as integer,",
+						"          LABORCODE as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          PERSONGROUP as string,",
+						"          PLUSCREVNUM as integer,",
+						"          PLUSCCHANGEDATE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> srcRawStgJobplan",
+						"srcRawStgJobplan derive(ENTRY_DT = currentTimestamp(),",
+						"          JPNUM = iifNull(JPNUM, 'NA', JPNUM),",
+						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+						"          JPDURATION = iifNull(JPDURATION, toDouble(0.000), JPDURATION),",
+						"          STATUS = iifNull(STATUS, 'NA', STATUS),",
+						"          PRIORITY = iifNull(PRIORITY, toInteger(-1), PRIORITY),",
+						"          JOBPLANID = iifNull(JOBPLANID, toInteger(-1), JOBPLANID),",
+						"          DOWNTIME = iifNull(DOWNTIME, toInteger(-1), DOWNTIME),",
+						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+						"          PERSONGROUP = iifNull(PERSONGROUP, 'NA', PERSONGROUP),",
+						"          PLUSCREVNUM = iifNull(PLUSCREVNUM, toInteger(-1), PLUSCREVNUM),",
+						"          PLUSCCHANGEDATE = iifNull(toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'))) ~> dCRawStgJobPlan",
+						"dCRawStgJobPlan sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          JPNUM,",
+						"          DESCRIPTION,",
+						"          JPDURATION,",
+						"          STATUS,",
+						"          PRIORITY,",
+						"          JOBPLANID,",
+						"          DOWNTIME,",
+						"          LABORCODE,",
+						"          SITEID,",
+						"          ORGID,",
+						"          PERSONGROUP,",
+						"          PLUSCREVNUM,",
+						"          PLUSCCHANGEDATE,",
+						"          ENTRY_DT",
+						"     )) ~> sinkRawStgJobplan"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgLabtrans_df')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "RawSrc_Labtrans_ds",
+								"type": "DatasetReference"
+							},
+							"name": "RawSrcLabTrans"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SinkStgLabTrans",
+								"type": "DatasetReference"
+							},
+							"name": "sinkStgLabTrans"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dcRawStgLabTrans"
+						},
+						{
+							"name": "selRawStgLabTrans"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          REFWO as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          LOCATION as string,",
+						"          TRANSDATE as string,",
+						"          CRAFT as string,",
+						"          LABORCODE as string,",
+						"          PAYRATE as string,",
+						"          STARTDATETIME as string,",
+						"          FINISHDATETIME as string,",
+						"          REGULARHRS as string,",
+						"          STARTDATE as string,",
+						"          FINISHDATE as string,",
+						"          LABTRANSID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> RawSrcLabTrans",
+						"RawSrcLabTrans derive(ENTRY_DT = currentTimestamp(),",
+						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+						"          REFWO = iifNull(REFWO, 'NA', REFWO),",
+						"          STARTDATETIME = toTimestamp(substring(STARTDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          FINISHDATETIME = toTimestamp(substring(FINISHDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          STARTDATE = toTimestamp(substring(STARTDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          FINISHDATE = toTimestamp(substring(FINISHDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          TRANSDATE = toTimestamp(substring(TRANSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLabTrans",
+						"dcRawStgLabTrans select(mapColumn(",
+						"          REFWO,",
+						"          SITEID,",
+						"          ORGID,",
+						"          LOCATION,",
+						"          TRANSDATE,",
+						"          CRAFT,",
+						"          PAYRATE,",
+						"          STARTDATETIME,",
+						"          FINISHDATETIME,",
+						"          REGULARHRS,",
+						"          STARTDATE,",
+						"          FINISHDATE,",
+						"          LABTRANSID,",
+						"          ENTRY_DT",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selRawStgLabTrans",
+						"selRawStgLabTrans sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          REFWO as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          LOCATION as string,",
+						"          PAYRATE as decimal(18,2),",
+						"          CRAFT as string,",
+						"          STARTDATETIME as timestamp,",
+						"          FINISHDATETIME as timestamp,",
+						"          REGULARHRS as decimal(18,9),",
+						"          STARTDATE as date,",
+						"          FINISHDATE as date,",
+						"          TRANSDATE as timestamp,",
+						"          LAB_ID as integer,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          REFWO,",
+						"          SITEID,",
+						"          ORGID,",
+						"          LOCATION,",
+						"          PAYRATE,",
+						"          CRAFT,",
+						"          STARTDATETIME,",
+						"          FINISHDATETIME,",
+						"          REGULARHRS,",
+						"          STARTDATE,",
+						"          FINISHDATE,",
+						"          TRANSDATE,",
+						"          LAB_ID = LABTRANSID,",
+						"          ENTRY_DT",
+						"     )) ~> sinkStgLabTrans"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgLabtrans_df1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "RawSrc_Labtrans_ds1",
+								"type": "DatasetReference"
+							},
+							"name": "RawSrcLabTrans"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SinkStgLabTrans1",
+								"type": "DatasetReference"
+							},
+							"name": "sinkStgLabTrans"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dcRawStgLabTrans"
+						},
+						{
+							"name": "selRawStgLabTrans"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          REFWO as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          LOCATION as string,",
+						"          TRANSDATE as string,",
+						"          CRAFT as string,",
+						"          LABORCODE as string,",
+						"          PAYRATE as string,",
+						"          STARTDATETIME as string,",
+						"          FINISHDATETIME as string,",
+						"          REGULARHRS as string,",
+						"          STARTDATE as string,",
+						"          FINISHDATE as string,",
+						"          LABTRANSID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> RawSrcLabTrans",
+						"RawSrcLabTrans derive(ENTRY_DT = currentTimestamp(),",
+						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+						"          REFWO = iifNull(REFWO, 'NA', REFWO),",
+						"          STARTDATETIME = toTimestamp(substring(STARTDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          FINISHDATETIME = toTimestamp(substring(FINISHDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          STARTDATE = toTimestamp(substring(STARTDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          FINISHDATE = toTimestamp(substring(FINISHDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          TRANSDATE = toTimestamp(substring(TRANSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLabTrans",
+						"dcRawStgLabTrans select(mapColumn(",
+						"          REFWO,",
+						"          SITEID,",
+						"          ORGID,",
+						"          LOCATION,",
+						"          TRANSDATE,",
+						"          CRAFT,",
+						"          PAYRATE,",
+						"          STARTDATETIME,",
+						"          FINISHDATETIME,",
+						"          REGULARHRS,",
+						"          STARTDATE,",
+						"          FINISHDATE,",
+						"          LABTRANSID,",
+						"          ENTRY_DT",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selRawStgLabTrans",
+						"selRawStgLabTrans sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          REFWO as string,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          LOCATION as string,",
+						"          PAYRATE as decimal(18,2),",
+						"          CRAFT as string,",
+						"          STARTDATETIME as timestamp,",
+						"          FINISHDATETIME as timestamp,",
+						"          REGULARHRS as decimal(18,9),",
+						"          STARTDATE as date,",
+						"          FINISHDATE as date,",
+						"          TRANSDATE as timestamp,",
+						"          LAB_ID as integer,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          REFWO,",
+						"          SITEID,",
+						"          ORGID,",
+						"          LOCATION,",
+						"          PAYRATE,",
+						"          CRAFT,",
+						"          STARTDATETIME,",
+						"          FINISHDATETIME,",
+						"          REGULARHRS,",
+						"          STARTDATE,",
+						"          FINISHDATE,",
+						"          TRANSDATE,",
+						"          LAB_ID = LABTRANSID,",
+						"          ENTRY_DT",
+						"     )) ~> sinkStgLabTrans"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgLocations_df')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "RawStgLocationsDs",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawLocations"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sinkStgLocations",
+								"type": "DatasetReference"
+							},
+							"name": "sinkStgLocations"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dcRawStgLocations"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          TYPE as string,",
+						"          CHANGEBY as string,",
+						"          CHANGEDATE as string,",
+						"          STATUS as string,",
+						"          STATUSDATE as string,",
+						"          SITEID as string,",
+						"          ORGID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> srcRawLocations",
+						"srcRawLocations derive(ENTRY_DT = currentTimestamp(),",
+						"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          STATUSDATE = toTimestamp(substring(STATUSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLocations",
+						"dcRawStgLocations sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          TYPE as string,",
+						"          CHANGEBY as string,",
+						"          CHANGEDATE as timestamp,",
+						"          STATUS as string,",
+						"          STATUSDATE as timestamp,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          LOCATION,",
+						"          DESCRIPTION,",
+						"          TYPE,",
+						"          CHANGEBY,",
+						"          CHANGEDATE,",
+						"          STATUS,",
+						"          STATUSDATE,",
+						"          SITEID,",
+						"          ORGID,",
+						"          ENTRY_DT",
+						"     )) ~> sinkStgLocations"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgLocations_df1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "RawStgLocationsDs1",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawLocations"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sinkStgLocations1",
+								"type": "DatasetReference"
+							},
+							"name": "sinkStgLocations"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dcRawStgLocations"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          TYPE as string,",
+						"          CHANGEBY as string,",
+						"          CHANGEDATE as string,",
+						"          STATUS as string,",
+						"          STATUSDATE as string,",
+						"          SITEID as string,",
+						"          ORGID as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true) ~> srcRawLocations",
+						"srcRawLocations derive(ENTRY_DT = currentTimestamp(),",
+						"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+						"          STATUSDATE = toTimestamp(substring(STATUSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLocations",
+						"dcRawStgLocations sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          LOCATION as string,",
+						"          DESCRIPTION as string,",
+						"          TYPE as string,",
+						"          CHANGEBY as string,",
+						"          CHANGEDATE as timestamp,",
+						"          STATUS as string,",
+						"          STATUSDATE as timestamp,",
+						"          SITEID as string,",
+						"          ORGID as string,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          LOCATION,",
+						"          DESCRIPTION,",
+						"          TYPE,",
+						"          CHANGEBY,",
+						"          CHANGEDATE,",
+						"          STATUS,",
+						"          STATUSDATE,",
+						"          SITEID,",
+						"          ORGID,",
+						"          ENTRY_DT",
+						"     )) ~> sinkStgLocations"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgPerson_df')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "srcRawStgPerson_ds",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawStgPerson"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSynpMXMSTGPerson",
+								"type": "DatasetReference"
+							},
+							"name": "sinkRawStgPerson"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dCRawStgPerson"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PERSONID as string,",
+						"          FIRSTNAME as string,",
+						"          LASTNAME as string,",
+						"          STATUS as string,",
+						"          DEPARTMENT as string,",
+						"          TITLE as string,",
+						"          EMPLOYEETYPE as string,",
+						"          JOBCODE as string,",
+						"          SUPERVISOR as string,",
+						"          BIRTHDATE as string,",
+						"          HIREDATE as string,",
+						"          TERMINATIONDATE as string,",
+						"          LOCATION as string,",
+						"          LOCATIONSITE as string,",
+						"          STATUSDATE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true,",
+						"     partitionBy('hash', 1)) ~> srcRawStgPerson",
+						"srcRawStgPerson derive(ENTRY_DT = currentTimestamp(),",
+						"          LOCATIONSITE = iifNull(LOCATIONSITE, 'NA', LOCATIONSITE)) ~> dCRawStgPerson",
+						"dCRawStgPerson sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          PERSONUID as integer,",
+						"          PERSONID as string,",
+						"          FIRSTNAME as string,",
+						"          LASTNAME as string,",
+						"          STATUS as string,",
+						"          DEPARTMENT as string,",
+						"          TITLE as string,",
+						"          EMPLOYEETYPE as string,",
+						"          JOBCODE as string,",
+						"          SUPERVISOR as string,",
+						"          BIRTHDATE as date,",
+						"          HIREDATE as date,",
+						"          TERMINATIONDATE as date,",
+						"          LOCATION as string,",
+						"          LOCATIONSITE as string,",
+						"          STATUSDATE as timestamp,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          PERSONID,",
+						"          FIRSTNAME,",
+						"          LASTNAME,",
+						"          STATUS,",
+						"          DEPARTMENT,",
+						"          TITLE,",
+						"          EMPLOYEETYPE,",
+						"          JOBCODE,",
+						"          SUPERVISOR,",
+						"          BIRTHDATE,",
+						"          HIREDATE,",
+						"          TERMINATIONDATE,",
+						"          LOCATION,",
+						"          LOCATIONSITE,",
+						"          STATUSDATE,",
+						"          ENTRY_DT",
+						"     )) ~> sinkRawStgPerson"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpRawStgPerson_df1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "srcRawStgPerson_ds1",
+								"type": "DatasetReference"
+							},
+							"name": "srcRawStgPerson"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSynpMXMSTGPerson1",
+								"type": "DatasetReference"
+							},
+							"name": "sinkRawStgPerson"
+						}
+					],
+					"transformations": [
+						{
+							"name": "dCRawStgPerson"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PERSONID as string,",
+						"          FIRSTNAME as string,",
+						"          LASTNAME as string,",
+						"          STATUS as string,",
+						"          DEPARTMENT as string,",
+						"          TITLE as string,",
+						"          EMPLOYEETYPE as string,",
+						"          JOBCODE as string,",
+						"          SUPERVISOR as string,",
+						"          BIRTHDATE as string,",
+						"          HIREDATE as string,",
+						"          TERMINATIONDATE as string,",
+						"          LOCATION as string,",
+						"          LOCATIONSITE as string,",
+						"          STATUSDATE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true,",
+						"     partitionBy('hash', 1)) ~> srcRawStgPerson",
+						"srcRawStgPerson derive(ENTRY_DT = currentTimestamp(),",
+						"          LOCATIONSITE = iifNull(LOCATIONSITE, 'NA', LOCATIONSITE)) ~> dCRawStgPerson",
+						"dCRawStgPerson sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          PERSONUID as integer,",
+						"          PERSONID as string,",
+						"          FIRSTNAME as string,",
+						"          LASTNAME as string,",
+						"          STATUS as string,",
+						"          DEPARTMENT as string,",
+						"          TITLE as string,",
+						"          EMPLOYEETYPE as string,",
+						"          JOBCODE as string,",
+						"          SUPERVISOR as string,",
+						"          BIRTHDATE as date,",
+						"          HIREDATE as date,",
+						"          TERMINATIONDATE as date,",
+						"          LOCATION as string,",
+						"          LOCATIONSITE as string,",
+						"          STATUSDATE as timestamp,",
+						"          ENTRY_DT as timestamp",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          PERSONID,",
+						"          FIRSTNAME,",
+						"          LASTNAME,",
+						"          STATUS,",
+						"          DEPARTMENT,",
+						"          TITLE,",
+						"          EMPLOYEETYPE,",
+						"          JOBCODE,",
+						"          SUPERVISOR,",
+						"          BIRTHDATE,",
+						"          HIREDATE,",
+						"          TERMINATIONDATE,",
+						"          LOCATION,",
+						"          LOCATIONSITE,",
+						"          STATUSDATE,",
+						"          ENTRY_DT",
+						"     )) ~> sinkRawStgPerson"
+					]
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

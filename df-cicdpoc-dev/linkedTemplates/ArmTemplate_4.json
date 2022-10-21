@@ -1,0 +1,2216 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-cicdpoc-dev"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkMxmArchiveFile')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ArchivePath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": {
+							"value": "@dataset().ArchivePath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkMxmArchiveFile1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ArchivePath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": {
+							"value": "@dataset().ArchivePath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkOperationLd')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "PARENT",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ASSET_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "JP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "TASKID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISTASK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCJREVNUM",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ACTSTART",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ESTDUR",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WOGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "CAL_PMDUEDT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WORKTYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTMONTH_YEAR",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_MONTH",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_CM_PM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "PMNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "AVAILABLE_MANHOUR",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PARENT_ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "SNAPSHOT_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CURRENT_RECORD_IND",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS_FLAG",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "OPERATION"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkOperationLd2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "PARENT",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ASSET_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "JP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "TASKID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISTASK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCJREVNUM",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ACTSTART",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ESTDUR",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WOGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "CAL_PMDUEDT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WORKTYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTMONTH_YEAR",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_MONTH",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_CM_PM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "PMNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "AVAILABLE_MANHOUR",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PARENT_ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "SNAPSHOT_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CURRENT_RECORD_IND",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS_FLAG",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "OPERATION"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkOperationLd21')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "PARENT",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ASSET_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "JP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "TASKID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISTASK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCJREVNUM",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ACTSTART",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ESTDUR",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WOGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "CAL_PMDUEDT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WORKTYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTMONTH_YEAR",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_MONTH",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_CM_PM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "PMNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "AVAILABLE_MANHOUR",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PARENT_ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "SNAPSHOT_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CURRENT_RECORD_IND",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS_FLAG",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "OPERATION"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkOperationLd22')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "PARENT",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ASSET_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "JP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "TASKID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISTASK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCJREVNUM",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_STATUS_CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ACTSTART",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ESTDUR",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WOGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "CAL_PMDUEDT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WORKTYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTMONTH_YEAR",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_MONTH",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTDATE_CM_PM",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "PMNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "AVAILABLE_MANHOUR",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PARENT_ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "SNAPSHOT_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CURRENT_RECORD_IND",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS_FLAG",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "OPERATION"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkPersonInitialLoad')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "PERSON_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_NBR",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_FIRST_NM",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_LAST_NM",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "TITLE",
+						"type": "varchar"
+					},
+					{
+						"name": "EMPLOYEE_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "JOBCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SUPERVISOR",
+						"type": "varchar"
+					},
+					{
+						"name": "BIRTHDATE",
+						"type": "date"
+					},
+					{
+						"name": "HIREDATE",
+						"type": "date"
+					},
+					{
+						"name": "TERMINATIONDATE",
+						"type": "date"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "PERSON"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkPersonInitialLoad1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "PERSON_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PERSON_NBR",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_FIRST_NM",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_LAST_NM",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "TITLE",
+						"type": "varchar"
+					},
+					{
+						"name": "EMPLOYEE_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "JOBCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SUPERVISOR",
+						"type": "varchar"
+					},
+					{
+						"name": "BIRTHDATE",
+						"type": "date"
+					},
+					{
+						"name": "HIREDATE",
+						"type": "date"
+					},
+					{
+						"name": "TERMINATIONDATE",
+						"type": "date"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "PERSON"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkStgLabTrans')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "REFWO",
+						"type": "varchar"
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "PAYRATE",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "CRAFT",
+						"type": "varchar"
+					},
+					{
+						"name": "STARTDATETIME",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FINISHDATETIME",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REGULARHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "STARTDATE",
+						"type": "date"
+					},
+					{
+						"name": "FINISHDATE",
+						"type": "date"
+					},
+					{
+						"name": "TRANSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "LAB_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMSTG",
+					"table": "STG_LABTRANS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkStgLabTrans1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "REFWO",
+						"type": "varchar"
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "PAYRATE",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "CRAFT",
+						"type": "varchar"
+					},
+					{
+						"name": "STARTDATETIME",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FINISHDATETIME",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REGULARHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "STARTDATE",
+						"type": "date"
+					},
+					{
+						"name": "FINISHDATE",
+						"type": "date"
+					},
+					{
+						"name": "TRANSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "LAB_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMSTG",
+					"table": "STG_LABTRANS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkWorkorder')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "WORKORDER_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "PARENT",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ASSETNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "JPNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "TASKID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISTASK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCJPREVNUM",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "RESPONDBY",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ACTSTART",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ESTDUR",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WOGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSONGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "OWNERGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "PMNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "WORKORDER"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SinkWorkorder1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "WORKORDER_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "PARENT",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ASSETNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "JPNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "TASKID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISTASK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCJPREVNUM",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "RESPONDBY",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ACTSTART",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "ESTDUR",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WOGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSONGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "OWNERGROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "date"
+					},
+					{
+						"name": "PMNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "WORKORDER"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcAzureSynpMxmAsset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "date"
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "",
+					"table": ""
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcAzureSynpMxmAsset1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "date"
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "",
+					"table": ""
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcMxmArchive')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcMxmArchive1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copySinkAssetFile1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset.txt",
+						"fileSystem": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copySinkAssetFile11')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset.txt",
+						"fileSystem": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copySrcAssetFile1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset*.txt",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copySrcAssetFile11')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset*.txt",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "df-cicdpoc-dev"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"AzureSynapseAnalytics1_connectionString": {
+			"value": ""
+		},
+		"dp_rawlandz_mxm_ls_db2_db_connectionString": {
+			"value": ""
+		},
+		"dp_rawlandz_mxm_ls_dstr_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://dlsdpanalyticsdevgen01.dfs.core.windows.net/"
+		},
+		"dp_rawlandz_mxm_ls_dstr_properties_typeProperties_url": {
+			"value": "https://dlsdpanalyticsdevgen01.dfs.core.windows.net/"
+		},
+		"SelfHostedIntegrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
+			"value": "/subscriptions/cce3181d-fb12-4092-8d8a-c91545fb15e6/resourcegroups/RGDPDEVGEN01/providers/Microsoft.DataFactory/factories/df-dp-analytics-dev/integrationruntimes/SelfHostedIR"
+		}
+	}
+}

@@ -1,0 +1,1308 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-cicdpoc-dev"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_asset_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('asset_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_asset_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('asset_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_jpl_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('jobplan_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_jpl_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('jobplan_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_labtrans_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('labtrans_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_labtrans_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('labtrans_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('person_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('person_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Outputpath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('locations_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Outputpath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Outputpath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('locations_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Outputpath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('workorder_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('workorder_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wostatusb_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('wostatus_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wostatusb_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('wostatus_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkLocationsLoad')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkLocationsLoad1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
+					"table": "LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkOperationSmryLd')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_SUMMARY_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WORK_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVT_WO",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "ASSET",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTED_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PRIORITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_START_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_FINISH_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WORK_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "PM_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_OPEN_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_PRIORITY_THRESHOLD_DAYS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WO_CLOSE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_AGE",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "WO_AGE_SEGMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IS_BACKLOG",
+						"type": "char"
+					},
+					{
+						"name": "SNAPSHOT_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDM",
+					"table": "OPERATION_SUMMARY"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkOperationSmryLd1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_SUMMARY_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WORK_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVT_WO",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "ASSET",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTED_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PRIORITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_START_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_FINISH_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WORK_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "PM_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_OPEN_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_PRIORITY_THRESHOLD_DAYS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WO_CLOSE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_AGE",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "WO_AGE_SEGMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IS_BACKLOG",
+						"type": "char"
+					},
+					{
+						"name": "SNAPSHOT_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDM",
+					"table": "OPERATION_SUMMARY"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkStgLocations')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMSTG",
+					"table": "STG_LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkStgLocations1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMSTG",
+					"table": "STG_LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
