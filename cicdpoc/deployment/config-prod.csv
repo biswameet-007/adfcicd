@@ -1,2 +1,2 @@
 type,name,path,value
-linkedService,AzureDataLakeStorage1,typeProperties.url,"https://dlsdpanalyticsdevgen01.dfs.core.windows.net/test/"
+linkedService,AzureDataLakeStorage1,typeProperties.url,"https://dlsdpanalyticsdevgen01.dfs.core.windows.net/"
