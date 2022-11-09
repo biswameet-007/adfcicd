@@ -16,6 +16,7 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "locations.txt",
+				"folderPath": "test",
 				"fileSystem": {
 					"value": "@dataset().InputPath",
 					"type": "Expression"
