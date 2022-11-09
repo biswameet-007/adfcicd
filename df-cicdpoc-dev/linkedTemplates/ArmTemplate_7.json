@@ -13,1226 +13,1570 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_wostatus_src_ds')]",
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_dest_ds1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"Outputpath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"schema": "MAXIMO",
-					"table": "WOSTATUS"
-				}
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('locations_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Outputpath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_wostatus_src_ds1')]",
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_dest_ds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"schema": "MAXIMO",
-					"table": "WOSTATUS"
-				}
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('workorder_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_source_ds')]",
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_dest_ds1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
-				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_source_ds1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
-					"type": "LinkedServiceReference"
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
 				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"schema": "MAXIMO",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('workorder_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wostatusb_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('wostatus_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wostatusb_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pDate": {
+						"type": "string"
+					},
+					"OutputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('wostatus_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkCopyMergeWOFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "workorderfullNew.txt",
+						"folderPath": "landing",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkCopyMergeWOStatusFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "wostatusfullNew.csv",
+						"folderPath": "landing",
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkLocationsLoad')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDW",
 					"table": "LOCATIONS"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds2')]",
+			"name": "[concat(parameters('factoryName'), '/sinkLocationsLoad1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureSynapseAnalytics1",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ORGANIZATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					}
+				],
 				"typeProperties": {
-					"schema": "MAXIMO",
-					"table": "LABTRANS"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds21')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
-				"typeProperties": {
-					"schema": "MAXIMO",
-					"table": "LABTRANS"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_source_ds3')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
-				"typeProperties": {
-					"schema": "MAXIMO",
+					"schema": "MXMDW",
 					"table": "LOCATIONS"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_source_ds')]",
+			"name": "[concat(parameters('factoryName'), '/sinkOperationSmryLd')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureSynapseAnalytics1",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_SUMMARY_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WORK_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVT_WO",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "ASSET",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTED_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PRIORITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_START_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_FINISH_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WORK_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "PM_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_OPEN_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_PRIORITY_THRESHOLD_DAYS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WO_CLOSE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_AGE",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "WO_AGE_SEGMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IS_BACKLOG",
+						"type": "char"
+					},
+					{
+						"name": "SNAPSHOT_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
 				"typeProperties": {
-					"schema": "Maximo",
-					"table": "WorkOrder"
+					"schema": "MXMDM",
+					"table": "OPERATION_SUMMARY"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wob_source_ds1')]",
+			"name": "[concat(parameters('factoryName'), '/sinkOperationSmryLd1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureSynapseAnalytics1",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Db2Table",
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "OPERATION_SUMMARY_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WORK_ORDER",
+						"type": "varchar"
+					},
+					{
+						"name": "GOVT_WO",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "ASSET",
+						"type": "varchar"
+					},
+					{
+						"name": "REPORTED_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "PRIORITY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_STATUS_CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_START_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "TARGET_FINISH_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 9
+					},
+					{
+						"name": "WORK_GROUP",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "PM_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITE",
+						"type": "varchar"
+					},
+					{
+						"name": "WO_OPEN_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_DUE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_PRIORITY_THRESHOLD_DAYS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "WO_CLOSE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "WO_AGE",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 4
+					},
+					{
+						"name": "WO_AGE_SEGMENT",
+						"type": "varchar"
+					},
+					{
+						"name": "WORK_TYPE_CM_PM",
+						"type": "varchar"
+					},
+					{
+						"name": "PERSON_GROUP_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IS_BACKLOG",
+						"type": "char"
+					},
+					{
+						"name": "SNAPSHOT_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SRC_TYPE_HASH_KEY",
+						"type": "varchar"
+					},
+					{
+						"name": "EFFECTIVE_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMDM",
+					"table": "OPERATION_SUMMARY"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkStgLocations')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMSTG",
+					"table": "STG_LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sinkStgLocations1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "TYPE",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "STATUS",
+						"type": "varchar"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "MXMSTG",
+					"table": "STG_LOCATIONS"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/srcCopyMergeWOFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "rawlandingmaximoworkorder"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "WONUM",
+						"type": "String"
+					},
+					{
+						"name": "PARENT",
+						"type": "String"
+					},
+					{
+						"name": "GOVTWONUM",
+						"type": "String"
+					},
+					{
+						"name": "JPNUM",
+						"type": "String"
+					},
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "STATUS",
+						"type": "String"
+					},
+					{
+						"name": "WORKTYPE",
+						"type": "String"
+					},
+					{
+						"name": "TASKID",
+						"type": "String"
+					},
+					{
+						"name": "ISTASK",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "PLUSCJPREVNUM",
+						"type": "String"
+					},
+					{
+						"name": "WOPRIORITY",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "String"
+					},
+					{
+						"name": "PMDUEDATE",
+						"type": "String"
+					},
+					{
+						"name": "TARGSTARTDATE",
+						"type": "String"
+					},
+					{
+						"name": "TARGCOMPDATE",
+						"type": "String"
+					},
+					{
+						"name": "REPORTDATE",
+						"type": "String"
+					},
+					{
+						"name": "RESPONDBY",
+						"type": "String"
+					},
+					{
+						"name": "ESTDUR",
+						"type": "String"
+					},
+					{
+						"name": "ACTLABHRS",
+						"type": "String"
+					},
+					{
+						"name": "ACTSTART",
+						"type": "String"
+					},
+					{
+						"name": "ACTFINISH",
+						"type": "String"
+					},
+					{
+						"name": "ACTINTLABHRS",
+						"type": "String"
+					},
+					{
+						"name": "WOGROUP",
+						"type": "String"
+					},
+					{
+						"name": "PERSONGROUP",
+						"type": "String"
+					},
+					{
+						"name": "OWNERGROUP",
+						"type": "String"
+					},
+					{
+						"name": "PLUSCFREQUENCY",
+						"type": "String"
+					},
+					{
+						"name": "PLUSCFREQUNIT",
+						"type": "String"
+					},
+					{
+						"name": "PMNEXTDUEDATE",
+						"type": "String"
+					},
+					{
+						"name": "PMNUM",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/srcCopyMergeWOStatusFiles')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "rawlandingmaximowostatus"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "WONUM",
+						"type": "String"
+					},
+					{
+						"name": "PARENT",
+						"type": "String"
+					},
+					{
+						"name": "STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEBY",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/srcOPS_JPID_Fix2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
 				"schema": [],
-				"typeProperties": {
-					"schema": "Maximo",
-					"table": "WorkOrder"
-				}
+				"typeProperties": {}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgAsset_df')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/srcRawStgAsset_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "srcRawStgAsset_ds",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawStgAsset"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSynpMXMSTGAsset",
-								"type": "DatasetReference"
-							},
-							"name": "sinkRawStgAsset",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureDataLakeStorage1",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "dCRawStgAsset"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          ASSETNUM as string,",
-						"          ASSETTAG as string,",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          INSTALLDATE as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          CHANGEDATE as timestamp 'yyyy.MM.dd HH:mm:ss'",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> srcRawStgAsset",
-						"srcRawStgAsset derive(ENTRY_DT = currentTimestamp(),",
-						"          ASSETNUM = iifNull(ASSETNUM, 'NA', ASSETNUM),",
-						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
-						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
-						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
-						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
-						"          CHANGEDATE = iifNull(CHANGEDATE, toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'),CHANGEDATE)) ~> dCRawStgAsset",
-						"dCRawStgAsset sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ASSETNUM as string,",
-						"          ASSETTAG as string,",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          INSTALLDATE as date,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          CHANGEDATE as timestamp,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          ASSETNUM,",
-						"          ASSETTAG,",
-						"          LOCATION,",
-						"          DESCRIPTION,",
-						"          INSTALLDATE,",
-						"          SITEID,",
-						"          ORGID,",
-						"          CHANGEDATE,",
-						"          ENTRY_DT",
-						"     )) ~> sinkRawStgAsset"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgAsset_df1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "srcRawStgAsset_ds1",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawStgAsset"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSynpMXMSTGAsset1",
-								"type": "DatasetReference"
-							},
-							"name": "sinkRawStgAsset",
-							"rejectedDataLinkedService": {
-								"referenceName": "AzureDataLakeStorage1",
-								"type": "LinkedServiceReference"
-							}
-						}
-					],
-					"transformations": [
-						{
-							"name": "dCRawStgAsset"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          ASSETNUM as string,",
-						"          ASSETTAG as string,",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          INSTALLDATE as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          CHANGEDATE as timestamp 'yyyy.MM.dd HH:mm:ss'",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> srcRawStgAsset",
-						"srcRawStgAsset derive(ENTRY_DT = currentTimestamp(),",
-						"          ASSETNUM = iifNull(ASSETNUM, 'NA', ASSETNUM),",
-						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
-						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
-						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
-						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
-						"          CHANGEDATE = iifNull(CHANGEDATE, toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'),CHANGEDATE)) ~> dCRawStgAsset",
-						"dCRawStgAsset sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          ASSETNUM as string,",
-						"          ASSETTAG as string,",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          INSTALLDATE as date,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          CHANGEDATE as timestamp,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          ASSETNUM,",
-						"          ASSETTAG,",
-						"          LOCATION,",
-						"          DESCRIPTION,",
-						"          INSTALLDATE,",
-						"          SITEID,",
-						"          ORGID,",
-						"          CHANGEDATE,",
-						"          ENTRY_DT",
-						"     )) ~> sinkRawStgAsset"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgJobPlan_df')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "src_RawStgJobPlan_ds",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawStgJobplan"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSynpMXMSTGJobplan",
-								"type": "DatasetReference"
-							},
-							"name": "sinkRawStgJobplan"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dCRawStgJobPlan"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          JPNUM as string,",
-						"          DESCRIPTION as string,",
-						"          JPDURATION as double '000,000,000.000',",
-						"          STATUS as string,",
-						"          PRIORITY as integer '000',",
-						"          JOBPLANID as integer,",
-						"          DOWNTIME as integer,",
-						"          LABORCODE as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          PERSONGROUP as string,",
-						"          PLUSCREVNUM as integer,",
-						"          PLUSCCHANGEDATE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> srcRawStgJobplan",
-						"srcRawStgJobplan derive(ENTRY_DT = currentTimestamp(),",
-						"          JPNUM = iifNull(JPNUM, 'NA', JPNUM),",
-						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
-						"          JPDURATION = iifNull(JPDURATION, toDouble(0.000), JPDURATION),",
-						"          STATUS = iifNull(STATUS, 'NA', STATUS),",
-						"          PRIORITY = iifNull(PRIORITY, toInteger(-1), PRIORITY),",
-						"          JOBPLANID = iifNull(JOBPLANID, toInteger(-1), JOBPLANID),",
-						"          DOWNTIME = iifNull(DOWNTIME, toInteger(-1), DOWNTIME),",
-						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
-						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
-						"          PERSONGROUP = iifNull(PERSONGROUP, 'NA', PERSONGROUP),",
-						"          PLUSCREVNUM = iifNull(PLUSCREVNUM, toInteger(-1), PLUSCREVNUM),",
-						"          PLUSCCHANGEDATE = iifNull(toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'))) ~> dCRawStgJobPlan",
-						"dCRawStgJobPlan sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          JPNUM,",
-						"          DESCRIPTION,",
-						"          JPDURATION,",
-						"          STATUS,",
-						"          PRIORITY,",
-						"          JOBPLANID,",
-						"          DOWNTIME,",
-						"          LABORCODE,",
-						"          SITEID,",
-						"          ORGID,",
-						"          PERSONGROUP,",
-						"          PLUSCREVNUM,",
-						"          PLUSCCHANGEDATE,",
-						"          ENTRY_DT",
-						"     )) ~> sinkRawStgJobplan"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgJobPlan_df1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "src_RawStgJobPlan_ds1",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawStgJobplan"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSynpMXMSTGJobplan1",
-								"type": "DatasetReference"
-							},
-							"name": "sinkRawStgJobplan"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dCRawStgJobPlan"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          JPNUM as string,",
-						"          DESCRIPTION as string,",
-						"          JPDURATION as double '000,000,000.000',",
-						"          STATUS as string,",
-						"          PRIORITY as integer '000',",
-						"          JOBPLANID as integer,",
-						"          DOWNTIME as integer,",
-						"          LABORCODE as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          PERSONGROUP as string,",
-						"          PLUSCREVNUM as integer,",
-						"          PLUSCCHANGEDATE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> srcRawStgJobplan",
-						"srcRawStgJobplan derive(ENTRY_DT = currentTimestamp(),",
-						"          JPNUM = iifNull(JPNUM, 'NA', JPNUM),",
-						"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
-						"          JPDURATION = iifNull(JPDURATION, toDouble(0.000), JPDURATION),",
-						"          STATUS = iifNull(STATUS, 'NA', STATUS),",
-						"          PRIORITY = iifNull(PRIORITY, toInteger(-1), PRIORITY),",
-						"          JOBPLANID = iifNull(JOBPLANID, toInteger(-1), JOBPLANID),",
-						"          DOWNTIME = iifNull(DOWNTIME, toInteger(-1), DOWNTIME),",
-						"          SITEID = iifNull(SITEID, 'NA', SITEID),",
-						"          ORGID = iifNull(ORGID, 'NA', ORGID),",
-						"          PERSONGROUP = iifNull(PERSONGROUP, 'NA', PERSONGROUP),",
-						"          PLUSCREVNUM = iifNull(PLUSCREVNUM, toInteger(-1), PLUSCREVNUM),",
-						"          PLUSCCHANGEDATE = iifNull(toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(PLUSCCHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'))) ~> dCRawStgJobPlan",
-						"dCRawStgJobPlan sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          JPNUM,",
-						"          DESCRIPTION,",
-						"          JPDURATION,",
-						"          STATUS,",
-						"          PRIORITY,",
-						"          JOBPLANID,",
-						"          DOWNTIME,",
-						"          LABORCODE,",
-						"          SITEID,",
-						"          ORGID,",
-						"          PERSONGROUP,",
-						"          PLUSCREVNUM,",
-						"          PLUSCCHANGEDATE,",
-						"          ENTRY_DT",
-						"     )) ~> sinkRawStgJobplan"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgLabtrans_df')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "RawSrc_Labtrans_ds",
-								"type": "DatasetReference"
-							},
-							"name": "RawSrcLabTrans"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "SinkStgLabTrans",
-								"type": "DatasetReference"
-							},
-							"name": "sinkStgLabTrans"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dcRawStgLabTrans"
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset.txt",
+						"folderPath": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
 						},
-						{
-							"name": "selRawStgLabTrans"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          REFWO as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          LOCATION as string,",
-						"          TRANSDATE as string,",
-						"          CRAFT as string,",
-						"          LABORCODE as string,",
-						"          PAYRATE as string,",
-						"          STARTDATETIME as string,",
-						"          FINISHDATETIME as string,",
-						"          REGULARHRS as string,",
-						"          STARTDATE as string,",
-						"          FINISHDATE as string,",
-						"          LABTRANSID as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> RawSrcLabTrans",
-						"RawSrcLabTrans derive(ENTRY_DT = currentTimestamp(),",
-						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
-						"          REFWO = iifNull(REFWO, 'NA', REFWO),",
-						"          STARTDATETIME = toTimestamp(substring(STARTDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          FINISHDATETIME = toTimestamp(substring(FINISHDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          STARTDATE = toTimestamp(substring(STARTDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          FINISHDATE = toTimestamp(substring(FINISHDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          TRANSDATE = toTimestamp(substring(TRANSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLabTrans",
-						"dcRawStgLabTrans select(mapColumn(",
-						"          REFWO,",
-						"          SITEID,",
-						"          ORGID,",
-						"          LOCATION,",
-						"          TRANSDATE,",
-						"          CRAFT,",
-						"          PAYRATE,",
-						"          STARTDATETIME,",
-						"          FINISHDATETIME,",
-						"          REGULARHRS,",
-						"          STARTDATE,",
-						"          FINISHDATE,",
-						"          LABTRANSID,",
-						"          ENTRY_DT",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selRawStgLabTrans",
-						"selRawStgLabTrans sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          REFWO as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          LOCATION as string,",
-						"          PAYRATE as decimal(18,2),",
-						"          CRAFT as string,",
-						"          STARTDATETIME as timestamp,",
-						"          FINISHDATETIME as timestamp,",
-						"          REGULARHRS as decimal(18,9),",
-						"          STARTDATE as date,",
-						"          FINISHDATE as date,",
-						"          TRANSDATE as timestamp,",
-						"          LAB_ID as integer,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          REFWO,",
-						"          SITEID,",
-						"          ORGID,",
-						"          LOCATION,",
-						"          PAYRATE,",
-						"          CRAFT,",
-						"          STARTDATETIME,",
-						"          FINISHDATETIME,",
-						"          REGULARHRS,",
-						"          STARTDATE,",
-						"          FINISHDATE,",
-						"          TRANSDATE,",
-						"          LAB_ID = LABTRANSID,",
-						"          ENTRY_DT",
-						"     )) ~> sinkStgLabTrans"
-					]
-				}
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "ASSETTAG",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgLabtrans_df1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/srcRawStgAsset_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "RawSrc_Labtrans_ds1",
-								"type": "DatasetReference"
-							},
-							"name": "RawSrcLabTrans"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "SinkStgLabTrans1",
-								"type": "DatasetReference"
-							},
-							"name": "sinkStgLabTrans"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dcRawStgLabTrans"
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset.txt",
+						"folderPath": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
 						},
-						{
-							"name": "selRawStgLabTrans"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          REFWO as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          LOCATION as string,",
-						"          TRANSDATE as string,",
-						"          CRAFT as string,",
-						"          LABORCODE as string,",
-						"          PAYRATE as string,",
-						"          STARTDATETIME as string,",
-						"          FINISHDATETIME as string,",
-						"          REGULARHRS as string,",
-						"          STARTDATE as string,",
-						"          FINISHDATE as string,",
-						"          LABTRANSID as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> RawSrcLabTrans",
-						"RawSrcLabTrans derive(ENTRY_DT = currentTimestamp(),",
-						"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
-						"          REFWO = iifNull(REFWO, 'NA', REFWO),",
-						"          STARTDATETIME = toTimestamp(substring(STARTDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          FINISHDATETIME = toTimestamp(substring(FINISHDATETIME, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          STARTDATE = toTimestamp(substring(STARTDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          FINISHDATE = toTimestamp(substring(FINISHDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          TRANSDATE = toTimestamp(substring(TRANSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLabTrans",
-						"dcRawStgLabTrans select(mapColumn(",
-						"          REFWO,",
-						"          SITEID,",
-						"          ORGID,",
-						"          LOCATION,",
-						"          TRANSDATE,",
-						"          CRAFT,",
-						"          PAYRATE,",
-						"          STARTDATETIME,",
-						"          FINISHDATETIME,",
-						"          REGULARHRS,",
-						"          STARTDATE,",
-						"          FINISHDATE,",
-						"          LABTRANSID,",
-						"          ENTRY_DT",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> selRawStgLabTrans",
-						"selRawStgLabTrans sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          REFWO as string,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          LOCATION as string,",
-						"          PAYRATE as decimal(18,2),",
-						"          CRAFT as string,",
-						"          STARTDATETIME as timestamp,",
-						"          FINISHDATETIME as timestamp,",
-						"          REGULARHRS as decimal(18,9),",
-						"          STARTDATE as date,",
-						"          FINISHDATE as date,",
-						"          TRANSDATE as timestamp,",
-						"          LAB_ID as integer,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          REFWO,",
-						"          SITEID,",
-						"          ORGID,",
-						"          LOCATION,",
-						"          PAYRATE,",
-						"          CRAFT,",
-						"          STARTDATETIME,",
-						"          FINISHDATETIME,",
-						"          REGULARHRS,",
-						"          STARTDATE,",
-						"          FINISHDATE,",
-						"          TRANSDATE,",
-						"          LAB_ID = LABTRANSID,",
-						"          ENTRY_DT",
-						"     )) ~> sinkStgLabTrans"
-					]
-				}
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "String"
+					},
+					{
+						"name": "ASSETTAG",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "String"
+					},
+					{
+						"name": "SITEID",
+						"type": "String"
+					},
+					{
+						"name": "ORGID",
+						"type": "String"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgLocations_df')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/srcRawStgPerson_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "RawStgLocationsDs",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawLocations"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "sinkStgLocations",
-								"type": "DatasetReference"
-							},
-							"name": "sinkStgLocations"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dcRawStgLocations"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          TYPE as string,",
-						"          CHANGEBY as string,",
-						"          CHANGEDATE as string,",
-						"          STATUS as string,",
-						"          STATUSDATE as string,",
-						"          SITEID as string,",
-						"          ORGID as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> srcRawLocations",
-						"srcRawLocations derive(ENTRY_DT = currentTimestamp(),",
-						"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          STATUSDATE = toTimestamp(substring(STATUSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLocations",
-						"dcRawStgLocations sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          TYPE as string,",
-						"          CHANGEBY as string,",
-						"          CHANGEDATE as timestamp,",
-						"          STATUS as string,",
-						"          STATUSDATE as timestamp,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          LOCATION,",
-						"          DESCRIPTION,",
-						"          TYPE,",
-						"          CHANGEBY,",
-						"          CHANGEDATE,",
-						"          STATUS,",
-						"          STATUSDATE,",
-						"          SITEID,",
-						"          ORGID,",
-						"          ENTRY_DT",
-						"     )) ~> sinkStgLocations"
-					]
-				}
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "person.txt",
+						"folderPath": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PERSONID",
+						"type": "String"
+					},
+					{
+						"name": "FIRSTNAME",
+						"type": "String"
+					},
+					{
+						"name": "LASTNAME",
+						"type": "String"
+					},
+					{
+						"name": "STATUS",
+						"type": "String"
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "String"
+					},
+					{
+						"name": "TITLE",
+						"type": "String"
+					},
+					{
+						"name": "EMPLOYEETYPE",
+						"type": "String"
+					},
+					{
+						"name": "JOBCODE",
+						"type": "String"
+					},
+					{
+						"name": "SUPERVISOR",
+						"type": "String"
+					},
+					{
+						"name": "BIRTHDATE",
+						"type": "String"
+					},
+					{
+						"name": "HIREDATE",
+						"type": "String"
+					},
+					{
+						"name": "TERMINATIONDATE",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "LOCATIONSITE",
+						"type": "String"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgLocations_df1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/srcRawStgPerson_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "RawStgLocationsDs1",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawLocations"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "sinkStgLocations1",
-								"type": "DatasetReference"
-							},
-							"name": "sinkStgLocations"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dcRawStgLocations"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          TYPE as string,",
-						"          CHANGEBY as string,",
-						"          CHANGEDATE as string,",
-						"          STATUS as string,",
-						"          STATUSDATE as string,",
-						"          SITEID as string,",
-						"          ORGID as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true) ~> srcRawLocations",
-						"srcRawLocations derive(ENTRY_DT = currentTimestamp(),",
-						"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
-						"          STATUSDATE = toTimestamp(substring(STATUSDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')) ~> dcRawStgLocations",
-						"dcRawStgLocations sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          LOCATION as string,",
-						"          DESCRIPTION as string,",
-						"          TYPE as string,",
-						"          CHANGEBY as string,",
-						"          CHANGEDATE as timestamp,",
-						"          STATUS as string,",
-						"          STATUSDATE as timestamp,",
-						"          SITEID as string,",
-						"          ORGID as string,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          LOCATION,",
-						"          DESCRIPTION,",
-						"          TYPE,",
-						"          CHANGEBY,",
-						"          CHANGEDATE,",
-						"          STATUS,",
-						"          STATUSDATE,",
-						"          SITEID,",
-						"          ORGID,",
-						"          ENTRY_DT",
-						"     )) ~> sinkStgLocations"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgPerson_df')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "srcRawStgPerson_ds",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawStgPerson"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSynpMXMSTGPerson",
-								"type": "DatasetReference"
-							},
-							"name": "sinkRawStgPerson"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dCRawStgPerson"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          PERSONID as string,",
-						"          FIRSTNAME as string,",
-						"          LASTNAME as string,",
-						"          STATUS as string,",
-						"          DEPARTMENT as string,",
-						"          TITLE as string,",
-						"          EMPLOYEETYPE as string,",
-						"          JOBCODE as string,",
-						"          SUPERVISOR as string,",
-						"          BIRTHDATE as string,",
-						"          HIREDATE as string,",
-						"          TERMINATIONDATE as string,",
-						"          LOCATION as string,",
-						"          LOCATIONSITE as string,",
-						"          STATUSDATE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true,",
-						"     partitionBy('hash', 1)) ~> srcRawStgPerson",
-						"srcRawStgPerson derive(ENTRY_DT = currentTimestamp(),",
-						"          LOCATIONSITE = iifNull(LOCATIONSITE, 'NA', LOCATIONSITE)) ~> dCRawStgPerson",
-						"dCRawStgPerson sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          PERSONUID as integer,",
-						"          PERSONID as string,",
-						"          FIRSTNAME as string,",
-						"          LASTNAME as string,",
-						"          STATUS as string,",
-						"          DEPARTMENT as string,",
-						"          TITLE as string,",
-						"          EMPLOYEETYPE as string,",
-						"          JOBCODE as string,",
-						"          SUPERVISOR as string,",
-						"          BIRTHDATE as date,",
-						"          HIREDATE as date,",
-						"          TERMINATIONDATE as date,",
-						"          LOCATION as string,",
-						"          LOCATIONSITE as string,",
-						"          STATUSDATE as timestamp,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          PERSONID,",
-						"          FIRSTNAME,",
-						"          LASTNAME,",
-						"          STATUS,",
-						"          DEPARTMENT,",
-						"          TITLE,",
-						"          EMPLOYEETYPE,",
-						"          JOBCODE,",
-						"          SUPERVISOR,",
-						"          BIRTHDATE,",
-						"          HIREDATE,",
-						"          TERMINATIONDATE,",
-						"          LOCATION,",
-						"          LOCATIONSITE,",
-						"          STATUSDATE,",
-						"          ENTRY_DT",
-						"     )) ~> sinkRawStgPerson"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dpRawStgPerson_df1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "srcRawStgPerson_ds1",
-								"type": "DatasetReference"
-							},
-							"name": "srcRawStgPerson"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSynpMXMSTGPerson1",
-								"type": "DatasetReference"
-							},
-							"name": "sinkRawStgPerson"
-						}
-					],
-					"transformations": [
-						{
-							"name": "dCRawStgPerson"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          PERSONID as string,",
-						"          FIRSTNAME as string,",
-						"          LASTNAME as string,",
-						"          STATUS as string,",
-						"          DEPARTMENT as string,",
-						"          TITLE as string,",
-						"          EMPLOYEETYPE as string,",
-						"          JOBCODE as string,",
-						"          SUPERVISOR as string,",
-						"          BIRTHDATE as string,",
-						"          HIREDATE as string,",
-						"          TERMINATIONDATE as string,",
-						"          LOCATION as string,",
-						"          LOCATIONSITE as string,",
-						"          STATUSDATE as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true,",
-						"     partitionBy('hash', 1)) ~> srcRawStgPerson",
-						"srcRawStgPerson derive(ENTRY_DT = currentTimestamp(),",
-						"          LOCATIONSITE = iifNull(LOCATIONSITE, 'NA', LOCATIONSITE)) ~> dCRawStgPerson",
-						"dCRawStgPerson sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          PERSONUID as integer,",
-						"          PERSONID as string,",
-						"          FIRSTNAME as string,",
-						"          LASTNAME as string,",
-						"          STATUS as string,",
-						"          DEPARTMENT as string,",
-						"          TITLE as string,",
-						"          EMPLOYEETYPE as string,",
-						"          JOBCODE as string,",
-						"          SUPERVISOR as string,",
-						"          BIRTHDATE as date,",
-						"          HIREDATE as date,",
-						"          TERMINATIONDATE as date,",
-						"          LOCATION as string,",
-						"          LOCATIONSITE as string,",
-						"          STATUSDATE as timestamp,",
-						"          ENTRY_DT as timestamp",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     staged: true,",
-						"     allowCopyCommand: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          PERSONID,",
-						"          FIRSTNAME,",
-						"          LASTNAME,",
-						"          STATUS,",
-						"          DEPARTMENT,",
-						"          TITLE,",
-						"          EMPLOYEETYPE,",
-						"          JOBCODE,",
-						"          SUPERVISOR,",
-						"          BIRTHDATE,",
-						"          HIREDATE,",
-						"          TERMINATIONDATE,",
-						"          LOCATION,",
-						"          LOCATIONSITE,",
-						"          STATUSDATE,",
-						"          ENTRY_DT",
-						"     )) ~> sinkRawStgPerson"
-					]
-				}
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "person.txt",
+						"folderPath": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PERSONID",
+						"type": "String"
+					},
+					{
+						"name": "FIRSTNAME",
+						"type": "String"
+					},
+					{
+						"name": "LASTNAME",
+						"type": "String"
+					},
+					{
+						"name": "STATUS",
+						"type": "String"
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "String"
+					},
+					{
+						"name": "TITLE",
+						"type": "String"
+					},
+					{
+						"name": "EMPLOYEETYPE",
+						"type": "String"
+					},
+					{
+						"name": "JOBCODE",
+						"type": "String"
+					},
+					{
+						"name": "SUPERVISOR",
+						"type": "String"
+					},
+					{
+						"name": "BIRTHDATE",
+						"type": "String"
+					},
+					{
+						"name": "HIREDATE",
+						"type": "String"
+					},
+					{
+						"name": "TERMINATIONDATE",
+						"type": "String"
+					},
+					{
+						"name": "LOCATION",
+						"type": "String"
+					},
+					{
+						"name": "LOCATIONSITE",
+						"type": "String"
+					},
+					{
+						"name": "STATUSDATE",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		}

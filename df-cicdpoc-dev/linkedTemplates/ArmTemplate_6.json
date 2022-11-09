@@ -6,10 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "df-cicdpoc-dev"
-		},
-		"dp_rawlandz_mxm_ls_db2_db_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'dp_rawlandz_mxm_ls_db2_db'"
 		}
 	},
 	"variables": {
@@ -17,7 +13,187 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/srcRawStgAsset_ds')]",
+			"name": "[concat(parameters('factoryName'), '/SrcAzureSynpMxmAsset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "date"
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "",
+					"table": ""
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcAzureSynpMxmAsset1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "ASSETNUM",
+						"type": "varchar"
+					},
+					{
+						"name": "LOCATION",
+						"type": "varchar"
+					},
+					{
+						"name": "DESCRIPTION",
+						"type": "varchar"
+					},
+					{
+						"name": "INSTALLDATE",
+						"type": "date"
+					},
+					{
+						"name": "SITEID",
+						"type": "varchar"
+					},
+					{
+						"name": "ORGID",
+						"type": "varchar"
+					},
+					{
+						"name": "CHANGEDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ENTRY_DT",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "",
+					"table": ""
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcMxmArchive')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SrcMxmArchive1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copySinkAssetFile')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -36,56 +212,22 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "asset.txt",
-						"folderPath": {
+						"fileSystem": {
 							"value": "@dataset().InputPath",
 							"type": "Expression"
-						},
-						"fileSystem": "raw"
+						}
 					},
 					"columnDelimiter": "|",
 					"escapeChar": "\\",
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": [
-					{
-						"name": "ASSETNUM",
-						"type": "String"
-					},
-					{
-						"name": "ASSETTAG",
-						"type": "String"
-					},
-					{
-						"name": "LOCATION",
-						"type": "String"
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "String"
-					},
-					{
-						"name": "INSTALLDATE",
-						"type": "String"
-					},
-					{
-						"name": "SITEID",
-						"type": "String"
-					},
-					{
-						"name": "ORGID",
-						"type": "String"
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "String"
-					}
-				]
+				"schema": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/srcRawStgAsset_ds1')]",
+			"name": "[concat(parameters('factoryName'), '/copySinkAssetFile1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -104,2520 +246,525 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": "asset.txt",
-						"folderPath": {
+						"fileSystem": {
 							"value": "@dataset().InputPath",
 							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "ASSETNUM",
-						"type": "String"
-					},
-					{
-						"name": "ASSETTAG",
-						"type": "String"
-					},
-					{
-						"name": "LOCATION",
-						"type": "String"
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "String"
-					},
-					{
-						"name": "INSTALLDATE",
-						"type": "String"
-					},
-					{
-						"name": "SITEID",
-						"type": "String"
-					},
-					{
-						"name": "ORGID",
-						"type": "String"
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srcRawStgPerson_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"InputPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "person.txt",
-						"folderPath": {
-							"value": "@dataset().InputPath",
-							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "PERSONID",
-						"type": "String"
-					},
-					{
-						"name": "FIRSTNAME",
-						"type": "String"
-					},
-					{
-						"name": "LASTNAME",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "DEPARTMENT",
-						"type": "String"
-					},
-					{
-						"name": "TITLE",
-						"type": "String"
-					},
-					{
-						"name": "EMPLOYEETYPE",
-						"type": "String"
-					},
-					{
-						"name": "JOBCODE",
-						"type": "String"
-					},
-					{
-						"name": "SUPERVISOR",
-						"type": "String"
-					},
-					{
-						"name": "BIRTHDATE",
-						"type": "String"
-					},
-					{
-						"name": "HIREDATE",
-						"type": "String"
-					},
-					{
-						"name": "TERMINATIONDATE",
-						"type": "String"
-					},
-					{
-						"name": "LOCATION",
-						"type": "String"
-					},
-					{
-						"name": "LOCATIONSITE",
-						"type": "String"
-					},
-					{
-						"name": "STATUSDATE",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srcRawStgPerson_ds1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"InputPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "person.txt",
-						"folderPath": {
-							"value": "@dataset().InputPath",
-							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "PERSONID",
-						"type": "String"
-					},
-					{
-						"name": "FIRSTNAME",
-						"type": "String"
-					},
-					{
-						"name": "LASTNAME",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "DEPARTMENT",
-						"type": "String"
-					},
-					{
-						"name": "TITLE",
-						"type": "String"
-					},
-					{
-						"name": "EMPLOYEETYPE",
-						"type": "String"
-					},
-					{
-						"name": "JOBCODE",
-						"type": "String"
-					},
-					{
-						"name": "SUPERVISOR",
-						"type": "String"
-					},
-					{
-						"name": "BIRTHDATE",
-						"type": "String"
-					},
-					{
-						"name": "HIREDATE",
-						"type": "String"
-					},
-					{
-						"name": "TERMINATIONDATE",
-						"type": "String"
-					},
-					{
-						"name": "LOCATION",
-						"type": "String"
-					},
-					{
-						"name": "LOCATIONSITE",
-						"type": "String"
-					},
-					{
-						"name": "STATUSDATE",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srcRawStgWoStatus_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"InputPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "wostatus.txt",
-						"folderPath": {
-							"value": "@dataset().InputPath",
-							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "WONUM",
-						"type": "String"
-					},
-					{
-						"name": "PARENT",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "String"
-					},
-					{
-						"name": "CHANGEBY",
-						"type": "String"
-					},
-					{
-						"name": "ORGID",
-						"type": "String"
-					},
-					{
-						"name": "SITEID",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srcRawStgWoStatus_ds1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"InputPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "wostatus.txt",
-						"folderPath": {
-							"value": "@dataset().InputPath",
-							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "WONUM",
-						"type": "String"
-					},
-					{
-						"name": "PARENT",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "String"
-					},
-					{
-						"name": "CHANGEBY",
-						"type": "String"
-					},
-					{
-						"name": "ORGID",
-						"type": "String"
-					},
-					{
-						"name": "SITEID",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srcStgWorkorder')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSynapseAnalytics1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [
-					{
-						"name": "WONUM",
-						"type": "varchar"
-					},
-					{
-						"name": "PARENT",
-						"type": "varchar"
-					},
-					{
-						"name": "GOVTWONUM",
-						"type": "varchar"
-					},
-					{
-						"name": "ORGID",
-						"type": "varchar"
-					},
-					{
-						"name": "SITEID",
-						"type": "varchar"
-					},
-					{
-						"name": "LOCATION",
-						"type": "varchar"
-					},
-					{
-						"name": "ASSETNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "JPNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "WORKTYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "TASKID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ISTASK",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "PLUSCJPREVNUM",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "WOPRIORITY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "STATUSDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "CHANGEBY",
-						"type": "varchar"
-					},
-					{
-						"name": "PMDUEDATE",
-						"type": "date"
-					},
-					{
-						"name": "TARGSTARTDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "TARGCOMPDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "REPORTDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "RESPONDBY",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ACTLABHRS",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 9
-					},
-					{
-						"name": "ACTSTART",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ACTFINISH",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ACTINTLABHRS",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 9
-					},
-					{
-						"name": "ESTDUR",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 9
-					},
-					{
-						"name": "WOGROUP",
-						"type": "varchar"
-					},
-					{
-						"name": "PERSONGROUP",
-						"type": "varchar"
-					},
-					{
-						"name": "OWNERGROUP",
-						"type": "varchar"
-					},
-					{
-						"name": "PLUSCFREQUENCY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "PLUSCFREQUNIT",
-						"type": "varchar"
-					},
-					{
-						"name": "PMNEXTDUEDATE",
-						"type": "date"
-					},
-					{
-						"name": "PMNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "ENTRY_DT",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "WO_ID",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "MXMSTG",
-					"table": "STG_WORKORDER"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/srcStgWorkorder1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSynapseAnalytics1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [
-					{
-						"name": "WONUM",
-						"type": "varchar"
-					},
-					{
-						"name": "PARENT",
-						"type": "varchar"
-					},
-					{
-						"name": "GOVTWONUM",
-						"type": "varchar"
-					},
-					{
-						"name": "ORGID",
-						"type": "varchar"
-					},
-					{
-						"name": "SITEID",
-						"type": "varchar"
-					},
-					{
-						"name": "LOCATION",
-						"type": "varchar"
-					},
-					{
-						"name": "ASSETNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "STATUS",
-						"type": "varchar"
-					},
-					{
-						"name": "JPNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "WORKTYPE",
-						"type": "varchar"
-					},
-					{
-						"name": "TASKID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "ISTASK",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "PLUSCJPREVNUM",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "WOPRIORITY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "STATUSDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "CHANGEBY",
-						"type": "varchar"
-					},
-					{
-						"name": "PMDUEDATE",
-						"type": "date"
-					},
-					{
-						"name": "TARGSTARTDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "TARGCOMPDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "REPORTDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "RESPONDBY",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ACTLABHRS",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 9
-					},
-					{
-						"name": "ACTSTART",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ACTFINISH",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ACTINTLABHRS",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 9
-					},
-					{
-						"name": "ESTDUR",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 9
-					},
-					{
-						"name": "WOGROUP",
-						"type": "varchar"
-					},
-					{
-						"name": "PERSONGROUP",
-						"type": "varchar"
-					},
-					{
-						"name": "OWNERGROUP",
-						"type": "varchar"
-					},
-					{
-						"name": "PLUSCFREQUENCY",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "PLUSCFREQUNIT",
-						"type": "varchar"
-					},
-					{
-						"name": "PMNEXTDUEDATE",
-						"type": "date"
-					},
-					{
-						"name": "PMNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "ENTRY_DT",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "WO_ID",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "MXMSTG",
-					"table": "STG_WORKORDER"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/src_RawStgJobPlan_ds')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"InputPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "jobplan.txt",
-						"folderPath": {
-							"value": "@dataset().InputPath",
-							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "JPNUM",
-						"type": "String"
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "String"
-					},
-					{
-						"name": "JPDURATION",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "PRIORITY",
-						"type": "String"
-					},
-					{
-						"name": "JOBPLANID",
-						"type": "String"
-					},
-					{
-						"name": "DOWNTIME",
-						"type": "String"
-					},
-					{
-						"name": "LABORCODE",
-						"type": "String"
-					},
-					{
-						"name": "SITEID",
-						"type": "String"
-					},
-					{
-						"name": "ORGID",
-						"type": "String"
-					},
-					{
-						"name": "PERSONGROUP",
-						"type": "String"
-					},
-					{
-						"name": "PLUSCREVNUM",
-						"type": "String"
-					},
-					{
-						"name": "PLUSCCHANGEDATE",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/src_RawStgJobPlan_ds1')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"InputPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "jobplan.txt",
-						"folderPath": {
-							"value": "@dataset().InputPath",
-							"type": "Expression"
-						},
-						"fileSystem": "raw"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "JPNUM",
-						"type": "String"
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "String"
-					},
-					{
-						"name": "JPDURATION",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "PRIORITY",
-						"type": "String"
-					},
-					{
-						"name": "JOBPLANID",
-						"type": "String"
-					},
-					{
-						"name": "DOWNTIME",
-						"type": "String"
-					},
-					{
-						"name": "LABORCODE",
-						"type": "String"
-					},
-					{
-						"name": "SITEID",
-						"type": "String"
-					},
-					{
-						"name": "ORGID",
-						"type": "String"
-					},
-					{
-						"name": "PERSONGROUP",
-						"type": "String"
-					},
-					{
-						"name": "PLUSCREVNUM",
-						"type": "String"
-					},
-					{
-						"name": "PLUSCCHANGEDATE",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_ls_db2_db')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This data set is used for retrieving data from maximo to raw landing through Db2 connector.",
-				"annotations": [],
-				"type": "Db2",
-				"typeProperties": {
-					"connectionString": "[parameters('dp_rawlandz_mxm_ls_db2_db_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "SelfHostedIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AutoResolveIntegrationRuntime')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 8,
-							"timeToLive": 0,
-							"cleanup": true
-						},
-						"pipelineExternalComputeScaleProperties": {
-							"timeToLive": 60
 						}
-					}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
-				"managedVirtualNetwork": {
-					"type": "ManagedVirtualNetworkReference",
-					"referenceName": "default"
-				}
+				"schema": []
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/copyMaximoFileArchive_pln')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Archive MXM Files",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "SrcMxmArchive",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SinkMxmArchiveFile",
-								"type": "DatasetReference",
-								"parameters": {
-									"ArchivePath": {
-										"value": "@pipeline().globalParameters.MaximoArchivePath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "DeleteMxmLanding files",
-						"type": "Delete",
-						"dependsOn": [
-							{
-								"activity": "Archive MXM Files",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "SrcMxmArchive",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							},
-							"enableLogging": false,
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.txt",
-								"enablePartitionDiscovery": false
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "MXMCOMM"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:19Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/copyMaximoFileArchive_pln1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Archive MXM Files",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "SrcMxmArchive1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SinkMxmArchiveFile1",
-								"type": "DatasetReference",
-								"parameters": {
-									"ArchivePath": {
-										"value": "@pipeline().globalParameters.MaximoArchivePath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "DeleteMxmLanding files",
-						"type": "Delete",
-						"dependsOn": [
-							{
-								"activity": "Archive MXM Files",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "SrcMxmArchive1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							},
-							"enableLogging": false,
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"wildcardFileName": "*.txt",
-								"enablePartitionDiscovery": false
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "MXMCOMM"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:19Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/copyMaximoFileInput_pln')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy Location File",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "locations*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcLocation1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyLocationsSink1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy Asset file",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Location File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "asset*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "copySrcAssetFile1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "copySinkAssetFile1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy Person File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Asset file",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "person*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcPerson1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyPersonSink1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy JobPlan File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Person File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "jobplan*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcJobPlan1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyJobPlanSink1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy WorkOrder File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy JobPlan File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "workorder*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcWorkOrder1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyWorkOrderSink1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy WOStatus File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy WorkOrder File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "wostatus*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcWOstatus1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyWOstatusSink1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy Labtrans File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy WOStatus File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "labtrans*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcLabtrans",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyLabtransSink",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "MXMCOMM"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:22Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/copyMaximoFileInput_pln1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy Location File",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "locations*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcLocation11",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyLocationsSink11",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy Asset file",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Location File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "asset*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "copySrcAssetFile11",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "copySinkAssetFile11",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy Person File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Asset file",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "person*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcPerson11",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyPersonSink11",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy JobPlan File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy Person File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "jobplan*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcJobPlan11",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyJobPlanSink11",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy WorkOrder File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy JobPlan File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "workorder*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcWorkOrder11",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyWorkOrderSink11",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy WOStatus File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy WorkOrder File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "wostatus*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcWOstatus11",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyWOstatusSink11",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
-						"name": "Copy Labtrans File",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copy WOStatus File",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"wildcardFolderPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									},
-									"wildcardFileName": "labtrans*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "MergeFiles"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "CopySrcLabtrans1",
-								"type": "DatasetReference",
-								"parameters": {
-									"LandingPath": {
-										"value": "@pipeline().globalParameters.Maximorelativelandingpath",
-										"type": "Expression"
-									}
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "CopyLabtransSink1",
-								"type": "DatasetReference",
-								"parameters": {
-									"InputPath": {
-										"value": "@pipeline().globalParameters.MaximoInputPath",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "MXMCOMM"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:22Z"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_asset_source_ds')]",
+			"name": "[concat(parameters('factoryName'), '/copySinkAssetFile11')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"InputPath": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"schema": "MAXIMO",
-					"table": "ASSET"
-				}
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset.txt",
+						"fileSystem": {
+							"value": "@dataset().InputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/dp_rawlandz_mxm_ls_db2_db')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_asset_source_ds1')]",
+			"name": "[concat(parameters('factoryName'), '/copySrcAssetFile')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"schema": "MAXIMO",
-					"table": "ASSET"
-				}
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset*.txt",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/dp_rawlandz_mxm_ls_db2_db')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_jbpl_source_ds')]",
+			"name": "[concat(parameters('factoryName'), '/copySrcAssetFile1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
-				"typeProperties": {}
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset*.txt",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/dp_rawlandz_mxm_ls_db2_db')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_jbpl_source_ds1')]",
+			"name": "[concat(parameters('factoryName'), '/copySrcAssetFile11')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "dp_rawlandz_mxm_ls_db2_db",
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"LandingPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "asset*.txt",
+						"folderPath": {
+							"value": "@dataset().LandingPath",
+							"type": "Expression"
+						},
+						"fileSystem": "raw"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_asset_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('asset_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_asset_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('asset_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_jpl_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('jobplan_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_jpl_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('jobplan_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_sinkds_jp')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "Db2Table",
-				"schema": [],
-				"typeProperties": {}
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "workorder_jp.txt",
+						"fileSystem": "rawlandingmaximo"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/dp_rawlandz_mxm_ls_db2_db')]"
-			]
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_labtrans_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('labtrans_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_labtrans_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"OutputPath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('labtrans_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().OutputPath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('person_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_pers_dest_ds1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Output": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('person_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Output",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wo_dest_ds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Outputpath": {
+						"type": "string",
+						"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('locations_',formatDateTime(addDays(utcNow(), -1), 'yyyyMMdd'),'.txt')\n\n",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().Outputpath",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
 		}
 	]
 }

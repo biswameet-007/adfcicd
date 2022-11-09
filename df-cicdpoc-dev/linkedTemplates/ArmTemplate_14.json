@@ -1,0 +1,2331 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-cicdpoc-dev"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_mdasset_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Pipline to transfer maximo Asset to raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_mdasset_act",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "raw/landing/maximo/asset_20220606.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.Asset.ASSETNUM,Maximo.Asset.ASSETTAG, Maximo.Asset.LOCATION,REGEXP_REPLACE(Maximo.Asset.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Asset.InstallDate,Maximo.asset.siteid,Maximo.Asset.orgid,Maximo.Asset.changedate from Maximo.Asset\nwhere date(changedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@pipeline().globalParameters.MaximoLog",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_asset_source_ds1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_asset_dest_ds1",
+								"type": "DatasetReference",
+								"parameters": {
+									"Output": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_mdperson_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copying person master data from maximo to raw landing zone",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_mdperson_act",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "raw/landing/maximo/person_20220606.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.person.PERSONID,Maximo.person.FIRSTNAME,Maximo.person.LASTNAME,Maximo.person.STATUS,Maximo.person.DEPARTMENT,Maximo.person.TITLE,Maximo.person.EMPLOYEETYPE,Maximo.person.JOBCODE,Maximo.person.SUPERVISOR,Maximo.person.BIRTHDATE,Maximo.person.HIREDATE,Maximo.person.TERMINATIONDATE,Maximo.person.LOCATION,Maximo.person.LocationSite,Maximo.person.STATUSDATE from Maximo.person\n where date(statusdate) ='@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "dprawlandz_mxm_pers_source_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dprawlandz_mxm_pers_dest_ds",
+								"type": "DatasetReference",
+								"parameters": {
+									"Output": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_mdperson_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copying person master data from maximo to raw landing zone",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_mdperson_act",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "raw/landing/maximo/person_20220606.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.person.PERSONID,Maximo.person.FIRSTNAME,Maximo.person.LASTNAME,Maximo.person.STATUS,Maximo.person.DEPARTMENT,Maximo.person.TITLE,Maximo.person.EMPLOYEETYPE,Maximo.person.JOBCODE,Maximo.person.SUPERVISOR,Maximo.person.BIRTHDATE,Maximo.person.HIREDATE,Maximo.person.TERMINATIONDATE,Maximo.person.LOCATION,Maximo.person.LocationSite,Maximo.person.STATUSDATE from Maximo.person\n where date(statusdate) ='@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "dprawlandz_mxm_pers_source_ds1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dprawlandz_mxm_pers_dest_ds1",
+								"type": "DatasetReference",
+								"parameters": {
+									"Output": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_workorder_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy data in bulk for workorder",
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().globalParameters.MaximoHistRangeInput",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "dprawlandz_mxm_wob_cpact",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "Db2Source",
+											"query": {
+												"value": "select Maximo.WorkOrder.WONUM,Maximo.WorkOrder.PARENT,Maximo.WorkOrder.GOVTWONUM,Maximo.WorkOrder.JPNUM,Maximo.WorkOrder.ASSETNUM,Maximo.WorkOrder.ORGID,Maximo.WorkOrder.SITEID,Maximo.WorkOrder.LOCATION,Maximo.WorkOrder.STATUS,Maximo.WorkOrder.WORKTYPE,Maximo.WorkOrder.TASKID,Maximo.WorkOrder.ISTASK,REGEXP_REPLACE(Maximo.WorkOrder.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\"|\\\\|\\/)','') AS DESCRIPTION,Maximo.WorkOrder.PLUSCJPREVNUM,Maximo.WorkOrder.WOPRIORITY,Maximo.WorkOrder.CHANGEDATE,Maximo.WorkOrder.STATUSDATE,Maximo.WorkOrder.CHANGEBY,Maximo.WorkOrder.PMDUEDATE,Maximo.WorkOrder.TARGSTARTDATE,Maximo.WorkOrder.TARGCOMPDATE,Maximo.WorkOrder.REPORTDATE,Maximo.WorkOrder.RESPONDBY,Maximo.WorkOrder.estdur,Maximo.WorkOrder.ACTLABHRS,Maximo.WorkOrder.ACTSTART,Maximo.WorkOrder.ACTFINISH,Maximo.WorkOrder.ACTINTLABHRS,Maximo.WorkOrder.WOGROUP,Maximo.WorkOrder.PERSONGROUP,Maximo.WorkOrder.OWNERGROUP,Maximo.WorkOrder.PLUSCFREQUENCY,Maximo.WorkOrder.PLUSCFREQUNIT,Maximo.WorkOrder.PMNEXTDUEDATE,Maximo.WorkOrder.PMNUM,Maximo.WorkOrder.workorderid from Maximo.WorkOrder \nwhere  date(statusdate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": "..csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "dprawlandz_mxm_wob_source_ds",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dprawlandz_mxm_wob_dest_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"pDate": {
+													"value": "@concat('workorder_',item().monthname,'_',item().year,'.txt')",
+													"type": "Expression"
+												},
+												"OutputPath": {
+													"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_workorder_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy data in bulk for workorder",
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().globalParameters.MaximoHistRangeInput",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "dprawlandz_mxm_wob_cpact",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "Db2Source",
+											"query": {
+												"value": "select Maximo.WorkOrder.WONUM,Maximo.WorkOrder.PARENT,Maximo.WorkOrder.GOVTWONUM,Maximo.WorkOrder.JPNUM,Maximo.WorkOrder.ASSETNUM,Maximo.WorkOrder.ORGID,Maximo.WorkOrder.SITEID,Maximo.WorkOrder.LOCATION,Maximo.WorkOrder.STATUS,Maximo.WorkOrder.WORKTYPE,Maximo.WorkOrder.TASKID,Maximo.WorkOrder.ISTASK,REGEXP_REPLACE(Maximo.WorkOrder.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\"|\\\\|\\/)','') AS DESCRIPTION,Maximo.WorkOrder.PLUSCJPREVNUM,Maximo.WorkOrder.WOPRIORITY,Maximo.WorkOrder.CHANGEDATE,Maximo.WorkOrder.STATUSDATE,Maximo.WorkOrder.CHANGEBY,Maximo.WorkOrder.PMDUEDATE,Maximo.WorkOrder.TARGSTARTDATE,Maximo.WorkOrder.TARGCOMPDATE,Maximo.WorkOrder.REPORTDATE,Maximo.WorkOrder.RESPONDBY,Maximo.WorkOrder.estdur,Maximo.WorkOrder.ACTLABHRS,Maximo.WorkOrder.ACTSTART,Maximo.WorkOrder.ACTFINISH,Maximo.WorkOrder.ACTINTLABHRS,Maximo.WorkOrder.WOGROUP,Maximo.WorkOrder.PERSONGROUP,Maximo.WorkOrder.OWNERGROUP,Maximo.WorkOrder.PLUSCFREQUENCY,Maximo.WorkOrder.PLUSCFREQUNIT,Maximo.WorkOrder.PMNEXTDUEDATE,Maximo.WorkOrder.PMNUM,Maximo.WorkOrder.workorderid from Maximo.WorkOrder \nwhere  date(statusdate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": "..csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "dprawlandz_mxm_wob_source_ds1",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dprawlandz_mxm_wob_dest_ds1",
+											"type": "DatasetReference",
+											"parameters": {
+												"pDate": {
+													"value": "@concat('workorder_',item().monthname,'_',item().year,'.txt')",
+													"type": "Expression"
+												},
+												"OutputPath": {
+													"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wostatus_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy data in bulk for workorder",
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().globalParameters.MaximoHistRangeInput",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "dprawlandz_mxm_wos_cpact_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [
+										{
+											"name": "Source",
+											"value": "MAXIMO.WOSTATUS"
+										},
+										{
+											"name": "Destination",
+											"value": "@{pipeline().globalParameters.MaximoDataIngestionOutput}//@{concat('wostatusr_',item().monthname,'_',item().year,'.txt')}"
+										}
+									],
+									"typeProperties": {
+										"source": {
+											"type": "Db2Source",
+											"query": {
+												"value": "select  wo.WONUM,wo.PARENT,wo.STATUS,wo.CHANGEDATE,wo.CHANGEBY,wo.ORGID,wo.SITEID from Maximo.wostatus wo , Maximo.Workorder wk where wk.wonum  = wo.wonum \nand wk.siteid = wo.siteid and date(wo.changedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'  \n\n",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": "..csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "dp_rawlandz_mxm_wostatus_src_ds",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dprawlandz_mxm_wostatusb_dest_ds",
+											"type": "DatasetReference",
+											"parameters": {
+												"pDate": {
+													"value": "@concat('wostatus_',item().monthname,'_',item().year,'.txt')",
+													"type": "Expression"
+												},
+												"OutputPath": {
+													"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_wostatus_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy data in bulk for workorder",
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().globalParameters.MaximoHistRangeInput",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "dprawlandz_mxm_wos_cpact_copy1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [
+										{
+											"name": "Source",
+											"value": "MAXIMO.WOSTATUS"
+										},
+										{
+											"name": "Destination",
+											"value": "@{pipeline().globalParameters.MaximoDataIngestionOutput}//@{concat('wostatusr_',item().monthname,'_',item().year,'.txt')}"
+										}
+									],
+									"typeProperties": {
+										"source": {
+											"type": "Db2Source",
+											"query": {
+												"value": "select  wo.WONUM,wo.PARENT,wo.STATUS,wo.CHANGEDATE,wo.CHANGEBY,wo.ORGID,wo.SITEID from Maximo.wostatus wo , Maximo.Workorder wk where wk.wonum  = wo.wonum \nand wk.siteid = wo.siteid and date(wo.changedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'  \n\n",
+												"type": "Expression"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": "..csv"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "dp_rawlandz_mxm_wostatus_src_ds1",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "dprawlandz_mxm_wostatusb_dest_ds1",
+											"type": "DatasetReference",
+											"parameters": {
+												"pDate": {
+													"value": "@concat('wostatus_',item().monthname,'_',item().year,'.txt')",
+													"type": "Expression"
+												},
+												"OutputPath": {
+													"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Master_Dim_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Asset Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Asset_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute JobPlan Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Asset Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Jobplan_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Location Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute JobPlan Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Locations_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Person Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Location Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Person_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute WorkOrder Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Person Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Workorder_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Master_Dim_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Asset Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Asset_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute JobPlan Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Asset Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Jobplan_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Location Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute JobPlan Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Locations_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Person Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Location Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Person_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute WorkOrder Dim",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Person Dim",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Workorder_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:29Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Ops_Smry_Master_Fact_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Ops Fact",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Operation_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Parent ActLabHrs Update",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Ops Fact",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Update_Parent_ActLabHrs_Ops_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Ops Smry Fact",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Parent ActLabHrs Update",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_operation_smry_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "ExecuteLabtrans Fact",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Ops Smry Fact",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Labtrans_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDM"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:28Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Ops_Smry_Master_Fact_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Ops Fact",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Operation_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Parent ActLabHrs Update",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Ops Fact",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Update_Parent_ActLabHrs_Ops_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Ops Smry Fact",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Parent ActLabHrs Update",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_operation_smry_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "ExecuteLabtrans Fact",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Ops Smry Fact",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Labtrans_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDM"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:30Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_Master_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Asset STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Asset_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Locations STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Asset STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Locations_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Jobplan STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Locations STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_JobPlan_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Person STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Jobplan STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Person_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute WorkOrder STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Person STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_WorkOrder_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute WOStatus STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute WorkOrder STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_WoStatus_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Labtrans",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute WOStatus STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Labtrans_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"concurrency": 12,
+				"policy": {
+					"elapsedTimeMetric": {
+						"duration": "0.0:30:00"
+					},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTG"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:28Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_Master_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Execute Asset STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Asset_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Locations STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Asset STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Locations_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Jobplan STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Locations STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_JobPlan_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Person STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Jobplan STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Person_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute WorkOrder STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute Person STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_WorkOrder_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute WOStatus STG",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute WorkOrder STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_WoStatus_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Execute Labtrans",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Execute WOStatus STG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Labtrans_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"concurrency": 12,
+				"policy": {
+					"elapsedTimeMetric": {
+						"duration": "0.0:30:00"
+					},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTG"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:28Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpDailyIncrementalLoad_mxm_mstr_pl')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This is the master pipeline which pulls Asset, Person, Jobplan,  location ,Work Order and Work Status from  maximo to raw zone",
+				"activities": [
+					{
+						"name": "Asset pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Labtrans Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_mdasset_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Jobplan pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Location Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_rawlandz_mxm_mdjbp_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Location Pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "person pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_loc_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "person pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Asset pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_mdperson_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "WorkOrderPipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_workorder_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Wo Status Pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Jobplan pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_wostatus_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "copyMaximoFileInput_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wo Status Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copyMaximoFileInput_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "dp_RawStg_Master_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "copyMaximoFileInput_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Master_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "dp_Master_Dim_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_RawStg_Master_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Master_Dim_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "dp_Ops_Smry_Master_Fact_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Master_Dim_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Ops_Smry_Master_Fact_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wo Status Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_rawz",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wo Status Pipeline",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_RawStg_Master_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_stgz",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_RawStg_Master_pln",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Master_Dim_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_refz",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Master_Dim_pln",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Ops_Smry_Master_Fact_pln",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "copyMaximoFileArchive_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Ops_Smry_Master_Fact_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copyMaximoFileArchive_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail_consz",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "copyMaximoFileArchive_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_consz",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Labtrans Pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "WorkOrderPipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_labtrans_pln",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:29Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_mdperson_pln')]",
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_workorder_pln')]",
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_wostatus_pln')]",
+				"[concat(variables('factoryId'), '/pipelines/dp_RawStg_Master_pln')]",
+				"[concat(variables('factoryId'), '/pipelines/dp_Master_Dim_pln')]",
+				"[concat(variables('factoryId'), '/pipelines/dp_Ops_Smry_Master_Fact_pln')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dpDailyIncrementalLoad_mxm_mstr_pl1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This is the master pipeline which pulls Asset, Person, Jobplan,  location ,Work Order and Work Status from  maximo to raw zone",
+				"activities": [
+					{
+						"name": "Asset pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Labtrans Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_mdasset_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Jobplan pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Location Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_rawlandz_mxm_mdjbp_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Location Pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "person pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_loc_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "person pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Asset pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_mdperson_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "WorkOrderPipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_workorder_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Wo Status Pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Jobplan pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_wostatus_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "copyMaximoFileInput_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wo Status Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copyMaximoFileInput_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "dp_RawStg_Master_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "copyMaximoFileInput_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_RawStg_Master_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "dp_Master_Dim_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_RawStg_Master_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Master_Dim_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "dp_Ops_Smry_Master_Fact_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Master_Dim_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dp_Ops_Smry_Master_Fact_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wo Status Pipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_rawz1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Wo Status Pipeline",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_RawStg_Master_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_stgz1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_RawStg_Master_pln",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Master_Dim_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_refz1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Master_Dim_pln",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendFailureAlertMail3",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Ops_Smry_Master_Fact_pln",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendFailureAlertMail1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "copyMaximoFileArchive_pln",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "dp_Ops_Smry_Master_Fact_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "copyMaximoFileArchive_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "SendDailySuccessMail_consz",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "copyMaximoFileArchive_pln",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "SendDailySuccessMail_consz1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Labtrans Pipeline",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "WorkOrderPipeline",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "dprawlandz_mxm_labtrans_pln1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:31Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_mdasset_pln1')]",
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_mdperson_pln1')]",
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_workorder_pln1')]",
+				"[concat(variables('factoryId'), '/pipelines/dprawlandz_mxm_wostatus_pln1')]",
+				"[concat(variables('factoryId'), '/pipelines/dp_RawStg_Master_pln1')]",
+				"[concat(variables('factoryId'), '/pipelines/dp_Master_Dim_pln1')]",
+				"[concat(variables('factoryId'), '/pipelines/dp_Ops_Smry_Master_Fact_pln1')]"
+			]
+		}
+	]
+}

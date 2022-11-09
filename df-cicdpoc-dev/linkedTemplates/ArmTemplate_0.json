@@ -81,7 +81,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:18Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
 			},
 			"dependsOn": []
 		},
@@ -130,7 +130,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:18Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
 			},
 			"dependsOn": []
 		},
@@ -187,7 +187,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:18Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
 			},
 			"dependsOn": []
 		},
@@ -244,7 +244,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:18Z"
+				"lastPublishTime": "2022-10-21T07:25:23Z"
 			},
 			"dependsOn": []
 		},
@@ -293,7 +293,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:22Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
 			},
 			"dependsOn": []
 		},
@@ -342,7 +342,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:22Z"
+				"lastPublishTime": "2022-10-21T07:25:24Z"
 			},
 			"dependsOn": []
 		},
@@ -391,7 +391,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:18Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
 			},
 			"dependsOn": []
 		},
@@ -440,7 +440,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:18Z"
+				"lastPublishTime": "2022-10-21T07:25:23Z"
 			},
 			"dependsOn": []
 		},
@@ -489,7 +489,7 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:20Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
 			},
 			"dependsOn": []
 		},
@@ -538,7 +538,47 @@
 					"name": "MXMCOMM"
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-09-29T07:13:20Z"
+				"lastPublishTime": "2022-10-21T07:25:22Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipelineTestCICD')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait2",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "Wait3",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "Wait2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
 			},
 			"dependsOn": []
 		},
@@ -610,6 +650,16 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SelfHostedIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SelfHostedIntegrationRuntime')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -632,7 +682,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzSnpMXMSTGAsset2')]",
+			"name": "[concat(parameters('factoryName'), '/AzSnpMXMSTGAsset')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -690,123 +740,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzSnpMXMSTGAsset21')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSynapseAnalytics1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [
-					{
-						"name": "ASSETNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "LOCATION",
-						"type": "varchar"
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "INSTALLDATE",
-						"type": "date"
-					},
-					{
-						"name": "SITEID",
-						"type": "varchar"
-					},
-					{
-						"name": "ORGID",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ENTRY_DT",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "MXMSTG",
-					"table": "STG_ASSET"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalytics1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzSnpMXMSTGAsset3')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSynapseAnalytics1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlDWTable",
-				"schema": [
-					{
-						"name": "ASSETNUM",
-						"type": "varchar"
-					},
-					{
-						"name": "LOCATION",
-						"type": "varchar"
-					},
-					{
-						"name": "DESCRIPTION",
-						"type": "varchar"
-					},
-					{
-						"name": "INSTALLDATE",
-						"type": "date"
-					},
-					{
-						"name": "SITEID",
-						"type": "varchar"
-					},
-					{
-						"name": "ORGID",
-						"type": "varchar"
-					},
-					{
-						"name": "CHANGEDATE",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "ENTRY_DT",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "MXMSTG",
-					"table": "STG_ASSET"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalytics1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzSnpMXMSTGAsset31')]",
+			"name": "[concat(parameters('factoryName'), '/AzSnpMXMSTGAsset1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {

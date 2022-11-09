@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'dp_rawlandz_mxm_ls_dstr'"
 		},
+		"synwdpdevgen01-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'synwdpdevgen01-WorkspaceDefaultSqlServer'"
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dlsdpanalyticsdevgen01.dfs.core.windows.net/"
@@ -30,6 +34,10 @@
 		"dp_rawlandz_mxm_ls_dstr_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dlsdpanalyticsdevgen01.dfs.core.windows.net/"
+		},
+		"synwdpdevgen01-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlsdpanalyticsdevgen01.dfs.core.windows.net"
 		},
 		"SelfHostedIntegrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",
@@ -197,9 +205,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"dp_rawlandz_mxm_ls_db2_db_connectionString": {
-						"value": "[parameters('dp_rawlandz_mxm_ls_db2_db_connectionString')]"
 					}
 				}
 			},
@@ -240,6 +245,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"dp_rawlandz_mxm_ls_db2_db_connectionString": {
+						"value": "[parameters('dp_rawlandz_mxm_ls_db2_db_connectionString')]"
 					}
 				}
 			},
@@ -260,6 +268,12 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"synwdpdevgen01-WorkspaceDefaultSqlServer_connectionString": {
+						"value": "[parameters('synwdpdevgen01-WorkspaceDefaultSqlServer_connectionString')]"
+					},
+					"synwdpdevgen01-WorkspaceDefaultStorage_properties_typeProperties_url": {
+						"value": "[parameters('synwdpdevgen01-WorkspaceDefaultStorage_properties_typeProperties_url')]"
 					}
 				}
 			},
@@ -305,6 +319,66 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'df-cicdpoc-dev_ArmTemplate_10')]"
+			]
+		},
+		{
+			"name": "df-cicdpoc-dev_ArmTemplate_12",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_12.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'df-cicdpoc-dev_ArmTemplate_11')]"
+			]
+		},
+		{
+			"name": "df-cicdpoc-dev_ArmTemplate_13",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_13.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'df-cicdpoc-dev_ArmTemplate_12')]"
+			]
+		},
+		{
+			"name": "df-cicdpoc-dev_ArmTemplate_14",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_14.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'df-cicdpoc-dev_ArmTemplate_13')]"
 			]
 		}
 	]

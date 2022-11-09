@@ -1,0 +1,1509 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "df-cicdpoc-dev"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WoStatus_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWoStatus_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWoStatus_df1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWoStatus": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.Maximorelativeinputpath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWoStatus": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTG"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WoStatus_pln_Batch')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWoStatus_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWoStatus_df",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWoStatus": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.MaximoLandingPath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWoStatus": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "raw-rejects-maximo"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTGpln"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:57:13Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WorkOrder_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWorkOrder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWorkOrder_df",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWorkOrder": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.Maximorelativeinputpath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWorkOrder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTG"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WorkOrder_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWorkOrder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWorkOrder_df1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWorkOrder": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.Maximorelativeinputpath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWorkOrder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTG"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WorkOrder_pln_batch')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWorkOrder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWorkOrder_df_old",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWorkOrder": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.MaximoLandingPath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWorkOrder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "raw-rejects-maximo"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTGpln"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:57:12Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WorkOrder_pln_bkp12sep')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWorkOrder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWorkOrder_df",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWorkOrder": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.Maximorelativeinputpath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWorkOrder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTGpln"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:57:13Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_RawStg_WorkOrder_pln_sep12')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpRawStgWorkOrder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dpRawStgWorkOrder_df_old",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcRawStgWorkOrder": {
+										"InputPath": {
+											"value": "@pipeline().globalParameters.Maximorelativeinputpath",
+											"type": "Expression"
+										}
+									},
+									"sinkRawStgWorkOrder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMSTGpln"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-19T10:57:12Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Update_Parent_ActLabHrs_Ops_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dp_Update_Parent_ActLabHrs_Ops_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dp_Update_Parent_ActLabHrs_Ops_df",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"UpdateParentActLabHrsOps": {},
+									"sinkUpdateParentActLabHrs": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:25Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Update_Parent_ActLabHrs_Ops_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dp_Update_Parent_ActLabHrs_Ops_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dp_Update_Parent_ActLabHrs_Ops_df1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"UpdateParentActLabHrsOps": {},
+									"sinkUpdateParentActLabHrs": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Workorder_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dp_Workorder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dp_Workorder_Dim_df",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcStgWorkorderRd": {},
+									"OrgSiteRef": {},
+									"LocationRef": {},
+									"MAXKEY": {},
+									"ExistingRecords": {},
+									"sinkInsertWorkorder": {},
+									"sinkUpdateWorkorder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"sourceStagingConcurrency": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:25Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_Workorder_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dp_Workorder_df",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dp_Workorder_Dim_df1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcStgWorkorderRd": {},
+									"OrgSiteRef": {},
+									"LocationRef": {},
+									"MAXKEY": {},
+									"ExistingRecords": {},
+									"sinkInsertWorkorder": {},
+									"sinkUpdateWorkorder": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"sourceStagingConcurrency": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_operation_smry_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpOpsSmrydf",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dp_OpsSmry_df",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcOpsSmryRd": {},
+									"ExistingRows": {},
+									"MaxSKey": {},
+									"LocationRefRd": {},
+									"sinkOpsSmryLdInsert": {},
+									"sinkOpsSmryUpdate": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"sourceStagingConcurrency": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDM"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_operation_smry_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "dpOpsSmrydf",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.01:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dp_OpsSmry_df1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"srcOpsSmryRd": {},
+									"ExistingRows": {},
+									"MaxSKey": {},
+									"LocationRefRd": {},
+									"sinkOpsSmryLdInsert": {},
+									"sinkOpsSmryUpdate": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "AzureDataLakeStorage1",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": {
+									"value": "@pipeline().globalParameters.MaximoLog",
+									"type": "Expression"
+								}
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine",
+							"sourceStagingConcurrency": 1
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMDM"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:28Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_mdjbp_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy jobplan from Maximo to Raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_mdjbpln_cpact1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "raw/landing/maximo/jobplan_20220606.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.jobplan.JPNUM,REGEXP_REPLACE(Maximo.jobplan.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.jobplan.JPDURATION,Maximo.jobplan.STATUS,Maximo.jobplan.PRIORITY,Maximo.jobplan.JOBPLANID,Maximo.jobplan.DOWNTIME,Maximo.jobplan.LABORCODE,Maximo.jobplan.SITEID,Maximo.jobplan.ORGID,Maximo.jobplan.PERSONGROUP,Maximo.jobplan.PLUSCREVNUM,Maximo.jobplan.PLUSCCHANGEDATE from Maximo.jobplan where date(pluscchangedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@pipeline().globalParameters.MaximoLog",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_jbpl_source_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_jpl_dest_ds",
+								"type": "DatasetReference",
+								"parameters": {
+									"OutputPath": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dp_rawlandz_mxm_mdjbp_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy jobplan from Maximo to Raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_mdjbpln_cpact1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "raw/landing/maximo/jobplan_20220606.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.jobplan.JPNUM,REGEXP_REPLACE(Maximo.jobplan.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.jobplan.JPDURATION,Maximo.jobplan.STATUS,Maximo.jobplan.PRIORITY,Maximo.jobplan.JOBPLANID,Maximo.jobplan.DOWNTIME,Maximo.jobplan.LABORCODE,Maximo.jobplan.SITEID,Maximo.jobplan.ORGID,Maximo.jobplan.PERSONGROUP,Maximo.jobplan.PLUSCREVNUM,Maximo.jobplan.PLUSCCHANGEDATE from Maximo.jobplan where date(pluscchangedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@pipeline().globalParameters.MaximoLog",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_jbpl_source_ds1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_jpl_dest_ds1",
+								"type": "DatasetReference",
+								"parameters": {
+									"OutputPath": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_labtrans_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy labor trans from maximo to raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_labtrans_cp",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "rawlandingmaximoworkorder/workorder_202206.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select  Maximo.labtrans.refwo, Maximo.labtrans.siteid, Maximo.labtrans.ORGID, Maximo.labtrans.LOCATION, Maximo.labtrans.transdate,Maximo.labtrans.craft,Maximo.labtrans.laborcode,Maximo.labtrans.payrate,Maximo.labtrans.startdatetime,Maximo.labtrans.finishdatetime,Maximo.labtrans.regularhrs,Maximo.labtrans.startdate,Maximo.labtrans.finishdate,Maximo.labtrans.labtransid from Maximo.labtrans where date(transdate)=  '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": "raw/maximo/log"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dprawlandz_mxm_wo_source_ds2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dprawlandz_mxm_labtrans_ds",
+								"type": "DatasetReference",
+								"parameters": {
+									"OutputPath": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:25Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_labtrans_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy labor trans from maximo to raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_labtrans_cp",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "rawlandingmaximoworkorder/workorder_202206.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select  Maximo.labtrans.refwo, Maximo.labtrans.siteid, Maximo.labtrans.ORGID, Maximo.labtrans.LOCATION, Maximo.labtrans.transdate,Maximo.labtrans.craft,Maximo.labtrans.laborcode,Maximo.labtrans.payrate,Maximo.labtrans.startdatetime,Maximo.labtrans.finishdatetime,Maximo.labtrans.regularhrs,Maximo.labtrans.startdate,Maximo.labtrans.finishdate,Maximo.labtrans.labtransid from Maximo.labtrans where date(transdate)=  '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": "raw/maximo/log"
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dprawlandz_mxm_wo_source_ds21",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dprawlandz_mxm_labtrans_ds1",
+								"type": "DatasetReference",
+								"parameters": {
+									"OutputPath": "@pipeline().globalParameters.MaximoDataIngestionOutput"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:25Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_loc_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy location from maximo to raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_loc-cp",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "rawlandingmaximoworkorder/workorder_202206.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.Locations.Location,REGEXP_REPLACE(Maximo.Locations.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Locations.type,Maximo.Locations.changeby,Maximo.Locations.changedate,Maximo.Locations.status,Maximo.Locations.Statusdate,Maximo.Locations.siteid,Maximo.locations.orgid from Maximo.Locations\nwhere date(statusdate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@pipeline().globalParameters.MaximoLog",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dprawlandz_mxm_wo_source_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dprawlandz_mxm_wo_dest_ds",
+								"type": "DatasetReference",
+								"parameters": {
+									"Outputpath": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_loc_pln1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "To copy location from maximo to raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_loc-cp",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "rawlandingmaximoworkorder/workorder_202206.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.Locations.Location,REGEXP_REPLACE(Maximo.Locations.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Locations.type,Maximo.Locations.changeby,Maximo.Locations.changedate,Maximo.Locations.status,Maximo.Locations.Statusdate,Maximo.Locations.siteid,Maximo.locations.orgid from Maximo.Locations\nwhere date(statusdate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@pipeline().globalParameters.MaximoLog",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dprawlandz_mxm_wo_source_ds3",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dprawlandz_mxm_wo_dest_ds1",
+								"type": "DatasetReference",
+								"parameters": {
+									"Outputpath": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dprawlandz_mxm_mdasset_pln')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Pipline to transfer maximo Asset to raw landing zone.",
+				"activities": [
+					{
+						"name": "dprawlandz_mxm_mdasset_act",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "."
+							},
+							{
+								"name": "Destination",
+								"value": "raw/landing/maximo/asset_20220606.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "Db2Source",
+								"query": {
+									"value": "select Maximo.Asset.ASSETNUM,Maximo.Asset.ASSETTAG, Maximo.Asset.LOCATION,REGEXP_REPLACE(Maximo.Asset.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Asset.InstallDate,Maximo.asset.siteid,Maximo.Asset.orgid,Maximo.Asset.changedate from Maximo.Asset\nwhere date(changedate) = '@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": {
+										"value": "@pipeline().globalParameters.MaximoLog",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_asset_source_ds",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "dp_rawlandz_mxm_asset_dest_ds",
+								"type": "DatasetReference",
+								"parameters": {
+									"Output": {
+										"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "MXMRAW"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-10-21T07:25:27Z"
+			},
+			"dependsOn": []
+		}
+	]
+}
