@@ -81,14 +81,7 @@
 			{
 				"name": "Copy Asset file",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy Location File",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -164,14 +157,7 @@
 			{
 				"name": "Copy Person File",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy Asset file",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -247,14 +233,7 @@
 			{
 				"name": "Copy JobPlan File",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy Person File",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -330,14 +309,7 @@
 			{
 				"name": "Copy WorkOrder File",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy JobPlan File",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -413,14 +385,7 @@
 			{
 				"name": "Copy WOStatus File",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy WorkOrder File",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
@@ -496,14 +461,7 @@
 			{
 				"name": "Copy Labtrans File",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Copy WOStatus File",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:10:00",
 					"retry": 0,
