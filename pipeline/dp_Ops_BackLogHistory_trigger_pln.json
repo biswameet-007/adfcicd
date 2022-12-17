@@ -1,0 +1,43 @@
+{
+	"name": "dp_Ops_BackLogHistory_trigger_pln",
+	"properties": {
+		"description": "This is the master pipeline which pulls Asset, Person, Jobplan,  location ,Work Order and Work Status from  maximo to raw zone",
+		"activities": [
+			{
+				"name": "isToday01",
+				"description": "check whether today  is first day of month",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(formatDateTime(utcNow(),'dd'), '01')\n\n",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Execute Backlog History",
+							"description": "Execute BackLog History on first day of  everymonth.",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "dp_Ops_BackLogHistory_pln",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMDM"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:42:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

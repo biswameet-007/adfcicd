@@ -1,0 +1,148 @@
+{
+	"name": "dp_Labtrans_WBS_Hist_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "SrcLabTransRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "WorkOrderRefRead"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkLabtrans",
+						"type": "DatasetReference"
+					},
+					"name": "sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join"
+				},
+				{
+					"name": "select"
+				},
+				{
+					"name": "alterRow"
+				},
+				{
+					"name": "dCHHMM"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          LAB_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          REGULARHRS as decimal(18,9),",
+				"          ESTDUR as decimal(18,9)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT LAB_ID,WONUM,SITE_ID,REGULARHRS,ESTDUR FROM MXMDW.LABTRANS',",
+				"     format: 'query',",
+				"     staged: true) ~> SrcLabTransRead",
+				"source(output(",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          WBS as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WONUM,SITE_ID,WBS FROM MXMDW.WORKORDER',",
+				"     format: 'query',",
+				"     staged: true) ~> WorkOrderRefRead",
+				"SrcLabTransRead, WorkOrderRefRead join(SrcLabTransRead@WONUM == WorkOrderRefRead@WONUM",
+				"     && SrcLabTransRead@SITE_ID == WorkOrderRefRead@SITE_ID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> join",
+				"dCHHMM select(mapColumn(",
+				"          WONUM = SrcLabTransRead@WONUM,",
+				"          SITE_ID = SrcLabTransRead@SITE_ID,",
+				"          WBS,",
+				"          LAB_ID,",
+				"          REGULARHRS_HHMM,",
+				"          ESTDUR_HHMM",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"select alterRow(updateIf(1==1)) ~> alterRow",
+				"join derive(REGULARHRS_HHMM = replace(iif(REGULARHRS==0.000000000,'00:00',concat(substringIndex(toString(REGULARHRS), '.', 1),':',toString(round(60 * (REGULARHRS - toInteger(substringIndex(toString(REGULARHRS), '.', 1))))))),':-',':'),",
+				"          ESTDUR_HHMM = replace(iif(ESTDUR==0.000000000,'00:00',concat(substringIndex(toString(ESTDUR), '.', 1),':',toString(round(60 * (ESTDUR - toInteger(substringIndex(toString(ESTDUR), '.', 1))))))),':-',':')) ~> dCHHMM",
+				"alterRow sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          LABTRANS_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          LOCATION_ID as integer,",
+				"          CRAFT_ID as integer,",
+				"          LAB_ID as integer,",
+				"          PAYRATE as decimal(18,2),",
+				"          STARTDATETIME as timestamp,",
+				"          FINISHDATETIME as timestamp,",
+				"          REGULARHRS as decimal(18,9),",
+				"          TRANSDATE as timestamp,",
+				"          GOVTWONUM as string,",
+				"          ASSETNUM as string,",
+				"          STATUS as string,",
+				"          JPNUM as string,",
+				"          WORKTYPE as string,",
+				"          DESCRIPTION as string,",
+				"          WOPRIORITY as integer,",
+				"          STATUSDATE as timestamp,",
+				"          TARGCOMPDATE as timestamp,",
+				"          REPORTDATE as timestamp,",
+				"          PMDUEDATE as date,",
+				"          TARGSTARTDATE as timestamp,",
+				"          ESTDUR as decimal(18,9),",
+				"          WOGROUP as string,",
+				"          PERSONGROUP as string,",
+				"          PMNEXTDUEDATE as date,",
+				"          PMNUM as string,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          WBS as string,",
+				"          ESTDUR_HHMM as string,",
+				"          REGULARHRS_HHMM as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['LAB_ID','WONUM','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          WONUM,",
+				"          SITE_ID,",
+				"          WBS,",
+				"          LAB_ID,",
+				"          REGULARHRS_HHMM,",
+				"          ESTDUR_HHMM",
+				"     )) ~> sink"
+			]
+		}
+	}
+}

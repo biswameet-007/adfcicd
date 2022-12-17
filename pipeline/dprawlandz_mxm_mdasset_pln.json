@@ -1,0 +1,94 @@
+{
+	"name": "dprawlandz_mxm_mdasset_pln",
+	"properties": {
+		"description": "Pipline to transfer maximo Asset to raw landing zone.",
+		"activities": [
+			{
+				"name": "dprawlandz_mxm_mdasset_act",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "raw/landing/maximo/asset_20220606.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "---select Maximo.Asset.ASSETNUM,Maximo.Asset.ASSETTAG, Maximo.Asset.LOCATION,REGEXP_REPLACE(Maximo.Asset.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.Asset.InstallDate,\n--Maximo.asset.siteid,Maximo.Asset.orgid,Maximo.Asset.changedate,REGEXP_REPLACE(Maximo.Asset.AssetType,'(\\n|,|\\r|\\r\\n|\")','') AS AssetType,Maximo.Asset.status,Maximo.Asset.custcode,Maximo.Asset.manufacturer,\n--Maximo.Asset.WarrantyExpDate,Maximo.Asset.GLAccount,REGEXP_REPLACE(Maximo.Asset.SerialNum,'(\\n|,|\\r|\\r\\n|\")','') AS SerialNum, REGEXP_REPLACE(Maximo.Asset.Model,'(\\n|,|\\r|\\r\\n|\")','') AS Model,Maximo.Asset.AssetId from Maximo.Asset \n--where date(changedate) = '@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}'\n\n\nselect a.ASSETNUM,a.ASSETTAG, a.LOCATION,REGEXP_REPLACE(a.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,a.InstallDate,\na.siteid,a.orgid,a.changedate,REGEXP_REPLACE(a.AssetType,'(\\n|,|\\r|\\r\\n|\")','') AS AssetType,a.status,a.custcode,a.manufacturer,\na.WarrantyExpDate,a.GLAccount,REGEXP_REPLACE(a.SerialNum,'(\\n|,|\\r|\\r\\n|\")','') AS SerialNum, REGEXP_REPLACE(a.Model,'(\\n|,|\\r|\\r\\n|\")','') AS Model,a.AssetId ,\nc.name as MfgName, cs.classificationid as ClassificationCode , cs.description as ClassificationName from maximo.asset a\nleft outer join maximo.companies c on a.manufacturer = c.company and a.orgid = c.orgid and c.type='M'  \nleft outer join maximo.classstructure cs on a.classstructureid = cs.classstructureid \n--where date(a.changedate) = '@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}'\n\n",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "dp_rawlandz_mxm_ls_dstr",
+								"type": "LinkedServiceReference"
+							},
+							"path": {
+								"value": "@pipeline().globalParameters.MaximoLog",
+								"type": "Expression"
+							}
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dp_rawlandz_mxm_asset_source_ds",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dp_rawlandz_mxm_asset_dest_ds",
+						"type": "DatasetReference",
+						"parameters": {
+							"Output": {
+								"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+								"type": "Expression"
+							},
+							"DaysToSub": "@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:38:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

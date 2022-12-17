@@ -1,0 +1,90 @@
+{
+	"name": "dprawlandz_mxm_assetstatus_pln",
+	"properties": {
+		"description": "To extract data from PM Meter table in Maximo",
+		"activities": [
+			{
+				"name": "dprawlandz_assetstatus_cp",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "--select PMMETERID,PMNUM,SITEID,ORGID,METERNAME,LASTPMWOGENREAD,LASTPMWOGENREADDT from maximo.pmmeter\n--where date(LASTPMWOGENREADDT) = '@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}'\n\n--'@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n\nSELECT ASSETSTATUSID,ASSETNUM,WONUM,DOWNTIME,CODE,LOCATION,SITEID,ORGID,CHANGEDATE FROM MAXIMO.ASSETSTATUS\n",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "AzureDataLakeStorage1",
+								"type": "LinkedServiceReference"
+							},
+							"path": {
+								"value": "@pipeline().globalParameters.MaximoLog",
+								"type": "Expression"
+							}
+						}
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dp_rawlanz_mxm_pm_src_ds",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dp_raw_landz_mxm_assetstatus_dest_ds",
+						"type": "DatasetReference",
+						"parameters": {
+							"OutputPath": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+							"DaysToSub": "@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:43:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

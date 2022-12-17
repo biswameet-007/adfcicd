@@ -1,0 +1,86 @@
+{
+	"name": "sinkDwAssetStatus",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ASSET_STATUS_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ASSETSTATUS_MXM_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ASSET_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ASSETNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "LOCATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DOWNTIME",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "DOWNTIME_HHMM",
+				"type": "varchar"
+			},
+			{
+				"name": "CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SRC_TYPE_HASH_KEY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "ASSET_STATUS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

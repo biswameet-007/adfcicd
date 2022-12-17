@@ -1,0 +1,90 @@
+{
+	"name": "SinkPM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "PM_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PMUID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PMNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LASTCOMPDATE",
+				"type": "date"
+			},
+			{
+				"name": "STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "NEXTDATE",
+				"type": "date"
+			},
+			{
+				"name": "USETARGETDATE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ALERTLEAD",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "REFORECAST",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DOWNTIME",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "PM"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

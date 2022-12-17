@@ -1,0 +1,63 @@
+{
+	"name": "SinkPM_Meter",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "PM_METER_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PM_METER_NBR",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PM_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PMNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "METER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "LASTPMWOGENREAD",
+				"type": "decimal",
+				"precision": 15,
+				"scale": 2
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "PM_METER"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,267 @@
+{
+	"name": "dpDailyIncrementalLoad_mxm_mstr_pl_dev",
+	"properties": {
+		"description": "This is the master pipeline which pulls Asset, Person, Jobplan,  location ,Work Order and Work Status from  maximo to raw zone",
+		"activities": [
+			{
+				"name": "copyMaximoFileInput_pln",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Raw Master pipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "copyMaximoFileInput_pln",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "dp_RawStg_Master_pln",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "copyMaximoFileInput_pln",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_RawStg_Master_pln",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "dp_Master_Dim_pln",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_RawStg_Master_pln",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Master_Dim_pln",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "dp_Ops_Smry_Master_Fact_pln",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_Master_Dim_pln",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_Ops_Smry_Master_Fact_pln",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "SendFailureAlertMail1",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_RawStg_Master_pln",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendFailureAlertMail_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "SendFailureAlertMail2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_Master_Dim_pln",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendFailureAlertMail_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "SendFailureAlertMail3",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_Ops_Smry_Master_Fact_pln",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendFailureAlertMail_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "SendDailySuccessMail_consz",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_Ops_Smry_Master_Fact_pln",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendDailySuccessMail_consz_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Send success raw dev",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Raw Master pipeline",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendDailySuccessMail_rawz_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Raw Master pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "dp_raw_mxm_mstr_pln",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Execute Failure pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Raw Master pipeline",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendFailureAlertMail_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Send success stg",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_RawStg_Master_pln",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendDailySuccessMail_stgz_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Send success ref",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "dp_Master_Dim_pln",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "SendDailySuccessMail_refz_dev",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:43:35Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

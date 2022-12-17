@@ -1,0 +1,95 @@
+{
+	"name": "dp_RawStg_AssetMeter_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SrcAssetMeter_ds",
+						"type": "DatasetReference"
+					},
+					"name": "SrcAssetMeterRawRead"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkStgAssetMeter",
+						"type": "DatasetReference"
+					},
+					"name": "sinkStgAssetMeter",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCStgAsstMeter"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETMETERID as string,",
+				"          ASSETNUM as string,",
+				"          METERNAME as string,",
+				"          LASTREADING as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LASTREADINGDATE as string,",
+				"          CHANGEDATE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> SrcAssetMeterRawRead",
+				"SrcAssetMeterRawRead derive(ASSETMETERID = toInteger(ASSETMETERID),",
+				"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+				"          LASTREADINGDATE = toTimestamp(substring(LASTREADINGDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dCStgAsstMeter",
+				"dCStgAsstMeter sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSETMETERID as integer,",
+				"          ASSETNUM as string,",
+				"          METERNAME as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LASTREADING as string,",
+				"          LASTREADINGDATE as timestamp,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          ASSETMETERID,",
+				"          ASSETNUM,",
+				"          METERNAME,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LASTREADING,",
+				"          LASTREADINGDATE,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkStgAssetMeter"
+			]
+		}
+	}
+}

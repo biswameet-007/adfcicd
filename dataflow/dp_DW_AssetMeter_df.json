@@ -1,0 +1,334 @@
+{
+	"name": "dp_DW_AssetMeter_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "SrcAssetMeterSTGRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "AssetRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "ExistAssetMeterRows"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MAXKEY"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkDwAssetMeter",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDWAssetMeter",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "sinkDwAssetMeter",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDwAstSttsUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lkpOrgSiteAM"
+				},
+				{
+					"name": "lkpAsset"
+				},
+				{
+					"name": "selExistAssetMeterRows"
+				},
+				{
+					"name": "lkpExist"
+				},
+				{
+					"name": "dCSrcTypeHash"
+				},
+				{
+					"name": "existsAssetMeter"
+				},
+				{
+					"name": "splitAssetMeter"
+				},
+				{
+					"name": "joinAstMetrMaxKey"
+				},
+				{
+					"name": "sKey"
+				},
+				{
+					"name": "dCInsert"
+				},
+				{
+					"name": "selectInsert"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "selectUpdate"
+				},
+				{
+					"name": "alterRowUpdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETMETER_MXM_ID as integer,",
+				"          ASSETNUM as string,",
+				"          METERNAME as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LASTREADING as string,",
+				"          LASTREADINGDATE as timestamp,",
+				"          CHANGEDATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSETMETERID AS ASSETMETER_MXM_ID,ASSETNUM,METERNAME,SITEID,ORGID,LASTREADING,LASTREADINGDATE,CHANGEDATE FROM MXMSTG.STG_ASSET_METER',",
+				"     format: 'query',",
+				"     staged: true) ~> SrcAssetMeterSTGRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,S.SITE_ID AS SITE_ID ,O.ORGANIZATION_NM,S.SITE_NM\\nFROM\\nMXMDW.ORGANIZATION O,\\nMXMDW.SITE S\\nWHERE\\nS.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          ASSET_ID as integer,",
+				"          Ref_ASSETNUM as string,",
+				"          Ref_SITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSET_ID,ASSETNUM AS Ref_ASSETNUM,SITE_ID AS Ref_SITE_ID FROM MXMDW.ASSET',",
+				"     format: 'query',",
+				"     staged: true) ~> AssetRefRead",
+				"source(output(",
+				"          ASSET_METER_ID as integer,",
+				"          ASSETMETER_MXM_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSET_METER_ID,ASSETMETER_MXM_ID,ASSET_ID,SRC_TYPE_HASH_KEY FROM MXMDW.ASSET_METER',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistAssetMeterRows",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(ASSET_METER_ID),0) FROM  MXMDW.ASSET_METER',",
+				"     format: 'query',",
+				"     staged: true) ~> MAXKEY",
+				"SrcAssetMeterSTGRead, OrgSiteRefRead lookup(ORGID == ORGANIZATION_NM",
+				"     && SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpOrgSiteAM",
+				"lkpOrgSiteAM, AssetRefRead lookup(ASSETNUM == Ref_ASSETNUM",
+				"     && SITE_ID == Ref_SITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'right')~> lkpAsset",
+				"ExistAssetMeterRows select(mapColumn(",
+				"          ExistASSET_METER_ID = ASSET_METER_ID,",
+				"          ExistASSETMETER_MXM_ID = ASSETMETER_MXM_ID,",
+				"          ExistASSET_ID = ASSET_ID,",
+				"          ExistSRC_TYPE_HASH_KEY = SRC_TYPE_HASH_KEY",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistAssetMeterRows",
+				"existsAssetMeter, selExistAssetMeterRows lookup(ASSET_ID == ExistASSET_ID",
+				"     && ASSETMETER_MXM_ID == ExistASSETMETER_MXM_ID",
+				"     && SRC_TYPE_HASH_KEY == ExistSRC_TYPE_HASH_KEY,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpExist",
+				"lkpAsset derive(SRC_TYPE_HASH_KEY = sha2(256,ASSETMETER_MXM_ID,ASSETNUM,METERNAME,SITE_ID,LASTREADING,LASTREADINGDATE,CHANGEDATE),",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dCSrcTypeHash",
+				"dCSrcTypeHash, selExistAssetMeterRows exists(SRC_TYPE_HASH_KEY == ExistSRC_TYPE_HASH_KEY,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsAssetMeter",
+				"lkpExist split(isNull(ExistASSET_METER_ID),",
+				"     disjoint: false) ~> splitAssetMeter@(NewItem, UpdateItem)",
+				"splitAssetMeter@NewItem, MAXKEY join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinAstMetrMaxKey",
+				"joinAstMetrMaxKey keyGenerate(output(NewASSET_METER_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> sKey",
+				"sKey derive(ASSET_METER_ID = MAXKEY + NewASSET_METER_ID) ~> dCInsert",
+				"dCInsert select(mapColumn(",
+				"          ASSETMETER_MXM_ID,",
+				"          ASSETNUM,",
+				"          METERNAME,",
+				"          LASTREADING,",
+				"          LASTREADINGDATE,",
+				"          CHANGEDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          ASSET_ID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          EFFECTIVE_DT,",
+				"          ASSET_METER_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInsert",
+				"selectInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"splitAssetMeter@UpdateItem select(mapColumn(",
+				"          ASSETMETER_MXM_ID,",
+				"          ASSETNUM,",
+				"          METERNAME,",
+				"          LASTREADING,",
+				"          LASTREADINGDATE,",
+				"          CHANGEDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          ASSET_ID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          EFFECTIVE_DT,",
+				"          ExistASSET_METER_ID,",
+				"          ExistASSETMETER_MXM_ID,",
+				"          ExistASSET_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectUpdate",
+				"selectUpdate alterRow(updateIf(1==1)) ~> alterRowUpdate",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSET_METER_ID as integer,",
+				"          ASSETMETER_MXM_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          METERNAME as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LASTREADING as string,",
+				"          LASTREADINGDATE as timestamp,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          ASSET_METER_ID,",
+				"          ASSETMETER_MXM_ID,",
+				"          ASSET_ID,",
+				"          ASSETNUM,",
+				"          METERNAME,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          LASTREADING,",
+				"          LASTREADINGDATE,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkDWAssetMeter",
+				"alterRowUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSET_METER_ID as integer,",
+				"          ASSETMETER_MXM_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          METERNAME as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LASTREADING as string,",
+				"          LASTREADINGDATE as timestamp,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['ASSETMETER_MXM_ID','ASSET_ID','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ASSET_METER_ID = ExistASSET_METER_ID,",
+				"          ASSETMETER_MXM_ID = ExistASSETMETER_MXM_ID,",
+				"          ASSET_ID = ExistASSET_ID,",
+				"          ASSETNUM,",
+				"          METERNAME,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          LASTREADING,",
+				"          LASTREADINGDATE,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkDwAstSttsUpdate"
+			]
+		}
+	}
+}

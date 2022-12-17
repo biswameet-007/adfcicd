@@ -1,0 +1,261 @@
+{
+	"name": "dp_WoStatus_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd22",
+						"type": "DatasetReference"
+					},
+					"name": "srcWoStatusStgRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd22",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd22",
+						"type": "DatasetReference"
+					},
+					"name": "WorkOrderRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd22",
+						"type": "DatasetReference"
+					},
+					"name": "ExistRows"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd22",
+						"type": "DatasetReference"
+					},
+					"name": "MAXKEY"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkDWWOSTATUS",
+						"type": "DatasetReference"
+					},
+					"name": "sinkWoStatus",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "lkpOrgSite"
+				},
+				{
+					"name": "selExistRows"
+				},
+				{
+					"name": "lkpWorkOrder"
+				},
+				{
+					"name": "dCHashKey"
+				},
+				{
+					"name": "exists"
+				},
+				{
+					"name": "lkpExist"
+				},
+				{
+					"name": "split"
+				},
+				{
+					"name": "joinMaxKey"
+				},
+				{
+					"name": "surrogateKey"
+				},
+				{
+					"name": "selInsert"
+				},
+				{
+					"name": "dCInsert"
+				},
+				{
+					"name": "alterRowInsert"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          STATUS as string,",
+				"          CHANGEDATE as timestamp,",
+				"          CHANGEBY as string,",
+				"          ORGID as string,",
+				"          SITEID as string,",
+				"          WOSTATUS_NBR as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WONUM,PARENT,STATUS,CHANGEDATE,CHANGEBY,ORGID,SITEID,WOSTATUSID AS WOSTATUS_NBR FROM MXMSTG.STG_WOSTATUS',",
+				"     format: 'query',",
+				"     staged: true) ~> srcWoStatusStgRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,S.SITE_ID AS SITE_ID ,O.ORGANIZATION_NM,S.SITE_NM FROM MXMDW.ORGANIZATION O,MXMDW.SITE S WHERE S.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          WORKORDER_ID as integer,",
+				"          RefWONUM as string,",
+				"          RefSITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WORKORDER_ID,WONUM AS RefWONUM,SITE_ID AS RefSITE_ID FROM MXMDW.WORKORDER',",
+				"     format: 'query',",
+				"     staged: true) ~> WorkOrderRefRead",
+				"source(output(",
+				"          WOSTATUS_ID as integer,",
+				"          WOSTATUS_NBR as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WOSTATUS_ID,WOSTATUS_NBR,WONUM,SITE_ID,SRC_TYPE_HASH_KEY FROM MXMDW.WOSTATUS',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistRows",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(WOSTATUS_ID),0) FROM  MXMDW.WOSTATUS',",
+				"     format: 'query',",
+				"     staged: true) ~> MAXKEY",
+				"srcWoStatusStgRead, OrgSiteRefRead lookup(ORGID == ORGANIZATION_NM",
+				"     && SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpOrgSite",
+				"ExistRows select(mapColumn(",
+				"          ExistWOSTATUS_ID = WOSTATUS_ID,",
+				"          ExistWOSTATUS_NBR = WOSTATUS_NBR,",
+				"          ExistWONUM = WONUM,",
+				"          ExistSITE_ID = SITE_ID,",
+				"          ExistSRC_TYPE_HASH_KEY = SRC_TYPE_HASH_KEY",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistRows",
+				"lkpOrgSite, WorkOrderRefRead lookup(WONUM == RefWONUM",
+				"     && SITE_ID == RefSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpWorkOrder",
+				"lkpWorkOrder derive(SRC_TYPE_HASH_KEY = sha2(256,WOSTATUS_NBR,WONUM,SITEID,STATUS,CHANGEDATE,CHANGEBY),",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dCHashKey",
+				"dCHashKey, selExistRows exists(SRC_TYPE_HASH_KEY == ExistSRC_TYPE_HASH_KEY,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists",
+				"exists, selExistRows lookup(WOSTATUS_NBR == ExistWOSTATUS_NBR",
+				"     && WONUM == ExistWONUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpExist",
+				"lkpExist split(isNull(ExistWOSTATUS_ID),",
+				"     disjoint: false) ~> split@(NewItem, RejectItem)",
+				"split@NewItem, MAXKEY join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMaxKey",
+				"joinMaxKey keyGenerate(output(NewWOSTATUS_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey",
+				"surrogateKey select(mapColumn(",
+				"          WONUM,",
+				"          PARENT,",
+				"          STATUS,",
+				"          CHANGEDATE,",
+				"          CHANGEBY,",
+				"          WOSTATUS_NBR,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          WORKORDER_ID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          EFFECTIVE_DT,",
+				"          MAXKEY,",
+				"          NewWOSTATUS_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selInsert",
+				"selInsert derive(WOSTATUS_ID = MAXKEY + NewWOSTATUS_ID) ~> dCInsert",
+				"dCInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WOSTATUS_ID as integer,",
+				"          WORKORDER_ID as integer,",
+				"          WOSTATUS_NBR as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          WO_STATUS as string,",
+				"          WO_STATUS_CHANGEDATE as timestamp,",
+				"          WO_STATUS_CHANGEBY as string,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          WOSTATUS_ID,",
+				"          WORKORDER_ID,",
+				"          WOSTATUS_NBR,",
+				"          WONUM,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          WO_STATUS = STATUS,",
+				"          WO_STATUS_CHANGEDATE = CHANGEDATE,",
+				"          WO_STATUS_CHANGEBY = CHANGEBY,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkWoStatus"
+			]
+		}
+	}
+}

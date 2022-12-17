@@ -1,0 +1,17 @@
+{
+	"name": "dp_rawlandz_mxm_ls_db2_db",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "This data set is used for retrieving data from maximo to raw landing through Db2 connector.",
+		"annotations": [],
+		"type": "Db2",
+		"typeProperties": {
+			"connectionString": "server=172.21.96.152:50005;database=maxdb;username=dbsrv_mxmprod;packagecollection='\"NULLID\"';authenticationtype=Basic",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiI4NzkwOGU3NC00MDVkLTRmMTctOGE0Ni0xNWM0ZDFkMGFmODgiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "SelfHostedIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

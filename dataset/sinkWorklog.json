@@ -1,0 +1,90 @@
+{
+	"name": "sinkWorklog",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "WORKLOG_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WORKLOG_NBR",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "RECORDKEY",
+				"type": "varchar"
+			},
+			{
+				"name": "WORKORDER_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOGTYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEBY",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "MODIFYBY",
+				"type": "varchar"
+			},
+			{
+				"name": "MODIFYDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CLASS",
+				"type": "varchar"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CURRENT_RECORD_IND",
+				"type": "smallint",
+				"precision": 5
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "WORKLOG"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

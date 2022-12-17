@@ -1,0 +1,86 @@
+{
+	"name": "adf-vectrusanalytics-test",
+	"properties": {
+		"globalParameters": {
+			"MaximoLandingPath": {
+				"type": "string",
+				"value": "raw/maximo/landing"
+			},
+			"MaximoRejectPath": {
+				"type": "string",
+				"value": "raw/maximo/rejects"
+			},
+			"MaximoInputPath": {
+				"type": "string",
+				"value": "raw/maximo/input"
+			},
+			"MaximoOutputPath": {
+				"type": "string",
+				"value": "raw/maximo/output"
+			},
+			"MaximoArchivePath": {
+				"type": "string",
+				"value": "raw/maximo/archive"
+			},
+			"MaximoDataIngestionOutput": {
+				"type": "string",
+				"value": "raw/maximo/landing"
+			},
+			"MaximoLog": {
+				"type": "string",
+				"value": "raw/maximo/log"
+			},
+			"MaximoHistRangeInput": {
+				"type": "array",
+				"value": [
+					{
+						"monthname": [],
+						"year": []
+					}
+				]
+			},
+			"MaximoStgAssetInput": {
+				"type": "string",
+				"value": "asset_20220727.txt"
+			},
+			"MaximoStgPersonInput": {
+				"type": "string",
+				"value": "person_20220727.txt"
+			},
+			"MaximoStgLocationInput": {
+				"type": "string",
+				"value": "locations_20220727.txt"
+			},
+			"MaximoStgWorkorderInput": {
+				"type": "string",
+				"value": "workorder_20220804.txt"
+			},
+			"MaximoStgWoStatusInput": {
+				"type": "string",
+				"value": "wostatus_20220804.txt"
+			},
+			"Maximorelativelandingpath": {
+				"type": "string",
+				"value": "maximo/landing"
+			},
+			"Maximorelativeinputpath": {
+				"type": "string",
+				"value": "maximo/input"
+			},
+			"MaximoWorkOrderRecCount": {
+				"type": "string",
+				"value": "0"
+			},
+			"MaximoIncrementalExtractDate": {
+				"type": "int",
+				"value": -1
+			}
+		}
+	},
+	"location": "South Central US",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "2590d305-77fd-4c43-bbc3-b24b7b84dba5",
+		"tenantId": "879782ba-90f5-45be-b3f0-980b8c104931"
+	}
+}

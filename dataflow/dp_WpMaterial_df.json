@@ -1,0 +1,285 @@
+{
+	"name": "dp_WpMaterial_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "srcStgWPMaterialRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "LocRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "WoRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "ExistRows"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MAXKEY"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkWPMATERIAL",
+						"type": "DatasetReference"
+					},
+					"name": "sinkWPMATERIAL",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "lkpOrgSite"
+				},
+				{
+					"name": "selExistRows"
+				},
+				{
+					"name": "lkpLocation"
+				},
+				{
+					"name": "selWPMaterial"
+				},
+				{
+					"name": "existsWPMaterial"
+				},
+				{
+					"name": "lkpexist"
+				},
+				{
+					"name": "splitWPMaterial"
+				},
+				{
+					"name": "joinMaxKey"
+				},
+				{
+					"name": "sKeyWPMaterial"
+				},
+				{
+					"name": "dCInsert"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "lkpWorkorder"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WONUM as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOCATION as string,",
+				"          PR as string,",
+				"          DESCRIPTION as string,",
+				"          ROWSTAMP as integer,",
+				"          REQUESTBY as string,",
+				"          REQUIREDATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WONUM,SITEID,ORGID,LOCATION,PR,DESCRIPTION,ROWSTAMP,REQUESTBY,REQUIREDATE FROM MXMSTG.STG_WPMATERIAL',",
+				"     format: 'query',",
+				"     staged: true) ~> srcStgWPMaterialRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,S.SITE_ID AS SITE_ID ,O.ORGANIZATION_NM,S.SITE_NM FROM MXMDW.ORGANIZATION O,MXMDW.SITE S WHERE S.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          LOCATION_ID as integer,",
+				"          DIM_LOCATION as string,",
+				"          LOCATION_DESC as string,",
+				"          LOC_SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT L.LOCATION_ID AS LOCATION_ID,L.LOCATION AS DIM_LOCATION,L.DESCRIPTION AS LOCATION_DESC, S.SITE_NM AS LOC_SITE_NM FROM MXMDW.LOCATIONS L INNER JOIN MXMDW.SITE S ON S.SITE_ID = L.SITE_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> LocRefRead",
+				"source(output(",
+				"          WORKORDER_ID as integer,",
+				"          RefWONUM as string,",
+				"          RefSITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WORKORDER_ID,WONUM As RefWONUM,SITE_ID As RefSITE_ID FROM MXMDW.WORKORDER',",
+				"     format: 'query',",
+				"     staged: true) ~> WoRefRead",
+				"source(output(",
+				"          WPMATERIAL_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          ROWSTAMP as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WPMATERIAL_ID,WONUM,SITE_ID,ROWSTAMP FROM MXMDW.WPMATERIAL',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistRows",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(WPMATERIAL_ID),0) FROM MXMDW.WPMATERIAL',",
+				"     format: 'query',",
+				"     staged: true) ~> MAXKEY",
+				"srcStgWPMaterialRead, OrgSiteRefRead lookup(SITEID == SITE_NM",
+				"     && ORGID == ORGANIZATION_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpOrgSite",
+				"ExistRows select(mapColumn(",
+				"          ExistWPMATERIAL_ID = WPMATERIAL_ID,",
+				"          ExistWONUM = WONUM,",
+				"          ExistSITE_ID = SITE_ID,",
+				"          ExistROWSTAMP = ROWSTAMP",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistRows",
+				"lkpOrgSite, LocRefRead lookup(LOCATION == DIM_LOCATION",
+				"     && SITEID === LOC_SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpLocation",
+				"lkpWorkorder select(mapColumn(",
+				"          WONUM,",
+				"          PR,",
+				"          DESCRIPTION,",
+				"          ROWSTAMP,",
+				"          REQUESTBY,",
+				"          REQUIREDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          LOCATION_ID,",
+				"          WORKORDER_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selWPMaterial",
+				"selWPMaterial, selExistRows exists(ROWSTAMP == ExistROWSTAMP",
+				"     && WONUM == ExistWONUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsWPMaterial",
+				"existsWPMaterial, selExistRows lookup(ROWSTAMP == ExistROWSTAMP",
+				"     && WONUM == ExistWONUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpexist",
+				"lkpexist split(isNull(ExistWPMATERIAL_ID),",
+				"     disjoint: false) ~> splitWPMaterial@(NewItem, UpdateItem)",
+				"splitWPMaterial@NewItem, MAXKEY join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMaxKey",
+				"joinMaxKey keyGenerate(output(NewWPMATERIAL_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> sKeyWPMaterial",
+				"sKeyWPMaterial derive(NewWPMATERIAL_ID = MAXKEY + NewWPMATERIAL_ID,",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dCInsert",
+				"dCInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"lkpLocation, WoRefRead lookup(WONUM == RefWONUM",
+				"     && SITE_ID == RefSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'both')~> lkpWorkorder",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WPMATERIAL_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LOCATION_ID as integer,",
+				"          WORKORDER_ID as integer,",
+				"          PR as string,",
+				"          DESCRIPTION as string,",
+				"          ROWSTAMP as integer,",
+				"          REQUESTBY as string,",
+				"          REQUIREDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          WPMATERIAL_ID = NewWPMATERIAL_ID,",
+				"          WONUM,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          LOCATION_ID,",
+				"          WORKORDER_ID,",
+				"          PR,",
+				"          DESCRIPTION,",
+				"          ROWSTAMP,",
+				"          REQUESTBY,",
+				"          REQUIREDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkWPMATERIAL"
+			]
+		}
+	}
+}

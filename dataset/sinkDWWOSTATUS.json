@@ -1,0 +1,71 @@
+{
+	"name": "sinkDWWOSTATUS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "WOSTATUS_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WORKORDER_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WOSTATUS_NBR",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WO_STATUS",
+				"type": "varchar"
+			},
+			{
+				"name": "WO_STATUS_CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "WO_STATUS_CHANGEBY",
+				"type": "varchar"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SRC_TYPE_HASH_KEY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "WOSTATUS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

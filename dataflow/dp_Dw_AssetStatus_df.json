@@ -1,0 +1,386 @@
+{
+	"name": "dp_Dw_AssetStatus_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "SrcSTGAssetStatusRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "AssetRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "LocationsRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "ExistRows"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MAXKEY"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkDwAssetStatus",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDwAssetStatus",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "sinkDwAssetStatus",
+						"type": "DatasetReference"
+					},
+					"name": "sinkDwAssetSttsUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selExistRows"
+				},
+				{
+					"name": "lkpOrgSite"
+				},
+				{
+					"name": "lkpLocation"
+				},
+				{
+					"name": "lkpAsset"
+				},
+				{
+					"name": "dCSrcTypeHash"
+				},
+				{
+					"name": "existsAstStts"
+				},
+				{
+					"name": "lkpExist"
+				},
+				{
+					"name": "splitAstStts"
+				},
+				{
+					"name": "joinMaxKey"
+				},
+				{
+					"name": "sKey"
+				},
+				{
+					"name": "selectInsert"
+				},
+				{
+					"name": "dCInsert"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "selUpdate"
+				},
+				{
+					"name": "alterRowUpdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETSTATUSID as integer,",
+				"          ASSETNUM as string,",
+				"          WONUM as string,",
+				"          LOCATION as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          DOWNTIME as decimal(18,9),",
+				"          CODE as string,",
+				"          CHANGEDATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSETSTATUSID,ASSETNUM,WONUM,LOCATION,SITEID,ORGID,DOWNTIME,CODE,CHANGEDATE FROM MXMSTG.STG_ASSET_STATUS',",
+				"     format: 'query',",
+				"     staged: true) ~> SrcSTGAssetStatusRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,S.SITE_ID AS SITE_ID ,O.ORGANIZATION_NM,S.SITE_NM\\nFROM\\nMXMDW.ORGANIZATION O,\\nMXMDW.SITE S\\nWHERE\\nS.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          ASSET_ID as integer,",
+				"          Ref_ASSETNUM as string,",
+				"          Ref_SITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSET_ID,ASSETNUM AS Ref_ASSETNUM,SITE_ID AS Ref_SITE_ID FROM MXMDW.ASSET',",
+				"     format: 'query',",
+				"     staged: true) ~> AssetRefRead",
+				"source(output(",
+				"          LOC_SITE_NM as string,",
+				"          LOCATION_ID as integer,",
+				"          LOCATION_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: '\\nSELECT S.SITE_NM AS LOC_SITE_NM ,L.LOCATION_ID AS LOCATION_ID,L.LOCATION AS LOCATION_NM\\nFROM\\nMXMDW.SITE S,\\nMXMDW.LOCATIONS L\\nWHERE\\n L.SITE_ID=S.SITE_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> LocationsRefRead",
+				"source(output(",
+				"          ASSET_STATUS_ID as integer,",
+				"          ASSETSTATUS_MXM_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT ASSET_STATUS_ID,ASSETSTATUS_MXM_ID,ASSET_ID,WONUM,SITE_ID,SRC_TYPE_HASH_KEY FROM MXMDW.ASSET_STATUS',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistRows",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(ASSET_STATUS_ID),0) FROM  MXMDW.ASSET_STATUS',",
+				"     format: 'query',",
+				"     staged: true) ~> MAXKEY",
+				"ExistRows select(mapColumn(",
+				"          ExistASSET_STATUS_ID = ASSET_STATUS_ID,",
+				"          ExistASSETSTATUS_MXM_ID = ASSETSTATUS_MXM_ID,",
+				"          ExistASSET_ID = ASSET_ID,",
+				"          ExistWONUM = WONUM,",
+				"          ExistSITE_ID = SITE_ID,",
+				"          ExistSRC_TYPE_HASH_KEY = SRC_TYPE_HASH_KEY",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistRows",
+				"SrcSTGAssetStatusRead, OrgSiteRefRead lookup(ORGID == ORGANIZATION_NM",
+				"     && SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpOrgSite",
+				"lkpOrgSite, LocationsRefRead lookup(LOCATION == LOCATION_NM",
+				"     && SITEID == LOC_SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'right')~> lkpLocation",
+				"lkpLocation, AssetRefRead lookup(ASSETNUM == Ref_ASSETNUM",
+				"     && SITE_ID == Ref_SITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'right')~> lkpAsset",
+				"lkpAsset derive(SRC_TYPE_HASH_KEY = sha2(256,ASSETSTATUSID,ASSETNUM,WONUM,SITE_ID,LOCATION_ID,DOWNTIME,CODE,CHANGEDATE),",
+				"          EFFECTIVE_DT = currentTimestamp(),",
+				"          LOCATION_ID = iifNull(LOCATION_ID, toInteger(-1), LOCATION_ID),",
+				"          DOWNTIME_HHMM = replace(iif(DOWNTIME==0.000000000,'00:00',concat(substringIndex(toString(DOWNTIME), '.', 1),':',toString(round(60 * (DOWNTIME - toInteger(substringIndex(toString(DOWNTIME), '.', 1))))))),':-',':')) ~> dCSrcTypeHash",
+				"dCSrcTypeHash, selExistRows exists(SRC_TYPE_HASH_KEY == ExistSRC_TYPE_HASH_KEY,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsAstStts",
+				"existsAstStts, selExistRows lookup(ASSETSTATUSID == ExistASSETSTATUS_MXM_ID",
+				"     && ASSET_ID == ExistASSET_ID",
+				"     && WONUM == ExistWONUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpExist",
+				"lkpExist split(isNull(ExistASSET_STATUS_ID),",
+				"     disjoint: false) ~> splitAstStts@(NewItem, UpdateItem)",
+				"splitAstStts@NewItem, MAXKEY join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMaxKey",
+				"joinMaxKey keyGenerate(output(NewASSET_STATUS_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> sKey",
+				"sKey select(mapColumn(",
+				"          ASSETSTATUSID,",
+				"          ASSETNUM,",
+				"          WONUM,",
+				"          DOWNTIME,",
+				"          CODE,",
+				"          CHANGEDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          LOCATION_ID,",
+				"          ASSET_ID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          EFFECTIVE_DT,",
+				"          MAXKEY,",
+				"          NewASSET_STATUS_ID,",
+				"          DOWNTIME_HHMM",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectInsert",
+				"selectInsert derive(ASSET_STATUS_ID = MAXKEY + NewASSET_STATUS_ID) ~> dCInsert",
+				"dCInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"splitAstStts@UpdateItem select(mapColumn(",
+				"          ASSETSTATUSID,",
+				"          ASSETNUM,",
+				"          WONUM,",
+				"          DOWNTIME,",
+				"          CODE,",
+				"          CHANGEDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          LOCATION_ID,",
+				"          ASSET_ID,",
+				"          SRC_TYPE_HASH_KEY,",
+				"          EFFECTIVE_DT,",
+				"          DOWNTIME_HHMM,",
+				"          ExistASSET_STATUS_ID,",
+				"          ExistASSETSTATUS_MXM_ID,",
+				"          ExistASSET_ID,",
+				"          ExistWONUM,",
+				"          ExistSITE_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selUpdate",
+				"selUpdate alterRow(updateIf(1==1)) ~> alterRowUpdate",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSET_STATUS_ID as integer,",
+				"          ASSETSTATUS_MXM_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          WONUM as string,",
+				"          LOCATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          DOWNTIME as decimal(18,9),",
+				"          DOWNTIME_HHMM as string,",
+				"          CODE as string,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          ASSET_STATUS_ID,",
+				"          ASSETSTATUS_MXM_ID = ASSETSTATUSID,",
+				"          ASSET_ID,",
+				"          ASSETNUM,",
+				"          WONUM,",
+				"          LOCATION_ID,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          DOWNTIME,",
+				"          DOWNTIME_HHMM,",
+				"          CODE,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkDwAssetStatus",
+				"alterRowUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSET_STATUS_ID as integer,",
+				"          ASSETSTATUS_MXM_ID as integer,",
+				"          ASSET_ID as integer,",
+				"          ASSETNUM as string,",
+				"          WONUM as string,",
+				"          LOCATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          DOWNTIME as decimal(18,9),",
+				"          DOWNTIME_HHMM as string,",
+				"          CODE as string,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['ASSET_STATUS_ID','ASSET_ID','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ASSET_STATUS_ID = ExistASSET_STATUS_ID,",
+				"          ASSETSTATUS_MXM_ID = ExistASSETSTATUS_MXM_ID,",
+				"          ASSET_ID = ExistASSET_ID,",
+				"          ASSETNUM,",
+				"          WONUM,",
+				"          LOCATION_ID,",
+				"          SITE_ID = ExistSITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          DOWNTIME,",
+				"          DOWNTIME_HHMM,",
+				"          CODE,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT,",
+				"          SRC_TYPE_HASH_KEY",
+				"     )) ~> sinkDwAssetSttsUpdate"
+			]
+		}
+	}
+}

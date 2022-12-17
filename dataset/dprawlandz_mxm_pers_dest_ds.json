@@ -1,0 +1,40 @@
+{
+	"name": "dprawlandz_mxm_pers_dest_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dp_rawlandz_mxm_ls_dstr",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Output": {
+				"type": "string",
+				"defaultValue": "@pipeline().globalparameters.MaximoDataIngestionOutput"
+			},
+			"DaysToSub": {
+				"type": "string",
+				"defaultValue": "@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('person_',dataset().DaysToSub,'.txt')\n",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().Output",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

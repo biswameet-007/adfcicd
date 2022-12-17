@@ -1,0 +1,29 @@
+{
+	"name": "AzureIntegrationRunTime",
+	"properties": {
+		"type": "Managed",
+		"description": "This is for Data Flow activities internal to data platform",
+		"typeProperties": {
+			"computeProperties": {
+				"location": "South Central US",
+				"dataFlowProperties": {
+					"computeType": "MemoryOptimized",
+					"coreCount": 48,
+					"timeToLive": 15,
+					"cleanup": false
+				},
+				"copyComputeScaleProperties": {
+					"dataIntegrationUnit": 64,
+					"timeToLive": 5
+				},
+				"pipelineExternalComputeScaleProperties": {
+					"timeToLive": 60
+				}
+			}
+		},
+		"managedVirtualNetwork": {
+			"type": "ManagedVirtualNetworkReference",
+			"referenceName": "default"
+		}
+	}
+}

@@ -1,0 +1,57 @@
+{
+	"name": "sinkPmMeterStg",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "PMMETERID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PMNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "SITEID",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGID",
+				"type": "varchar"
+			},
+			{
+				"name": "METER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "LASTPMWOGENREAD",
+				"type": "decimal",
+				"precision": 15,
+				"scale": 2
+			},
+			{
+				"name": "LASTPMWOGENREADDT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_PM_METER"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

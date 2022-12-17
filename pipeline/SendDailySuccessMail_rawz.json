@@ -1,0 +1,51 @@
+{
+	"name": "SendDailySuccessMail_rawz",
+	"properties": {
+		"activities": [
+			{
+				"name": "SendMail",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-18.southcentralus.logic.azure.com:443/workflows/b1aa64ddbdec43978b0574175ffcaf35/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=k7Iqx8QADt8e3VdSxWFzY0Fm0j6G-qMtyMLPQFf0OoA",
+					"method": "POST",
+					"headers": {
+						"Content-type": "application/json"
+					},
+					"body": {
+						"value": "{\n    \"message\" : \"@{concat('Daily run is successful for  ',formatDateTime(addDays(utcNow(), -1),'yyyy-MM-dd'), '  incremental load from Maximo production DB into the Data Lake Prod Environment for Raw Zone.')}\",\n    \"dataFactoryName\" : \"@{pipeline().DataFactory}\", \n    \"pipelineName\" : \"@{pipeline().TriggeredByPipelineName}\"\n    \n }\n\n",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"receiver1": {
+				"type": "string",
+				"defaultValue": "malarkodi.marimuthu@vectrus.com"
+			}
+		},
+		"variables": {
+			"JobPlanRecCount": {
+				"type": "String"
+			},
+			"RecCount": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "MXMCOMM"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:42:40Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

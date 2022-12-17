@@ -1,0 +1,104 @@
+{
+	"name": "dp_RawStg_Worklog_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SrcRaw_Worklog_ds",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawWorklogRead"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkStgWorklog",
+						"type": "DatasetReference"
+					},
+					"name": "sinkStgWorklog",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCWorklog"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WORKLOGID as string,",
+				"          RECORDKEY as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOGTYPE as string,",
+				"          CREATEDATE as string,",
+				"          CREATEBY as string,",
+				"          DESCRIPTION as string,",
+				"          MODIFYBY as string,",
+				"          MODIFYDATE as string,",
+				"          CLASS as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawWorklogRead",
+				"srcRawWorklogRead derive(CREATEDATE = iifNull(toTimestamp(substring(CREATEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(CREATEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')),",
+				"          MODIFYDATE = iifNull(toTimestamp(substring(MODIFYDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(MODIFYDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')),",
+				"          EFFECTIVE_DT = currentTimestamp(),",
+				"          WORKLOGID = toInteger(WORKLOGID),",
+				"          CLASS = iifNull(CLASS, 'NA', CLASS)) ~> dCWorklog",
+				"dCWorklog sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WORKLOGID as integer,",
+				"          RECORDKEY as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOGTYPE as string,",
+				"          CREATEBY as string,",
+				"          CREATEDATE as timestamp,",
+				"          DESCRIPTION as string,",
+				"          MODIFYBY as string,",
+				"          MODIFYDATE as timestamp,",
+				"          CLASS as string,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          WORKLOGID,",
+				"          RECORDKEY,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LOGTYPE,",
+				"          CREATEBY,",
+				"          CREATEDATE,",
+				"          DESCRIPTION,",
+				"          MODIFYBY,",
+				"          MODIFYDATE,",
+				"          CLASS,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkStgWorklog"
+			]
+		}
+	}
+}

@@ -1,0 +1,103 @@
+{
+	"name": "dprawlandz_mxm_wostatus_pln",
+	"properties": {
+		"description": "To copy data in bulk for workorder",
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().globalParameters.MaximoHistRangeInput",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "dprawlandz_mxm_wos_cpact_copy1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "MAXIMO.WOSTATUS"
+								},
+								{
+									"name": "Destination",
+									"value": "@{pipeline().globalParameters.MaximoDataIngestionOutput}//@{concat('wostatusr_',item().monthname,'_',item().year,'.txt')}"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "Db2Source",
+									"query": {
+										"value": "select  wo.WONUM,wo.PARENT,wo.STATUS,wo.CHANGEDATE,wo.CHANGEBY,wo.ORGID,wo.SITEID,wo.WOSTATUSID from Maximo.wostatus wo , Maximo.Workorder wk where wk.wonum  = wo.wonum \nand wk.siteid = wo.siteid and \ndate(wo.changedate) = '@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}'\n\n--'@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'  \n\n\n",
+										"type": "Expression"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": "..csv"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "dp_rawlandz_mxm_wostatus_src_ds",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "dprawlandz_mxm_wostatusb_dest_ds",
+									"type": "DatasetReference",
+									"parameters": {
+										"pDate": {
+											"value": "@concat('wostatus_',item().monthname,'_',item().year,'.txt')",
+											"type": "Expression"
+										},
+										"OutputPath": {
+											"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+											"type": "Expression"
+										},
+										"DaysToSub": "@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:39:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,97 @@
+{
+	"name": "dp_rawlandz_mxm_mdjbp_pln",
+	"properties": {
+		"description": "To copy jobplan from Maximo to Raw landing zone.",
+		"activities": [
+			{
+				"name": "dprawlandz_mxm_mdjbpln_cpact1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [
+					{
+						"name": "Source",
+						"value": "."
+					},
+					{
+						"name": "Destination",
+						"value": "raw/landing/maximo/jobplan_20220606.csv"
+					}
+				],
+				"typeProperties": {
+					"source": {
+						"type": "Db2Source",
+						"query": {
+							"value": "select Maximo.jobplan.JPNUM,REGEXP_REPLACE(Maximo.jobplan.DESCRIPTION,'(\\n|,|\\r|\\r\\n|\")','') AS DESCRIPTION,Maximo.jobplan.JPDURATION,Maximo.jobplan.STATUS,Maximo.jobplan.PRIORITY,Maximo.jobplan.JOBPLANID,Maximo.jobplan.DOWNTIME,Maximo.jobplan.LABORCODE,Maximo.jobplan.SITEID,Maximo.jobplan.ORGID,Maximo.jobplan.PERSONGROUP,Maximo.jobplan.PLUSCREVNUM,Maximo.jobplan.PLUSCCHANGEDATE from Maximo.jobplan\nwhere date(pluscchangedate) = '@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}'\n\n--'@{formatDateTime(addDays(utcNow(), -1), 'yyyy-MM-dd')}'\n\n\n\n\n",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"validateDataConsistency": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "dp_rawlandz_mxm_ls_dstr",
+								"type": "LinkedServiceReference"
+							},
+							"path": {
+								"value": "@pipeline().globalParameters.MaximoLog",
+								"type": "Expression"
+							}
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dp_rawlandz_mxm_jbpl_source_ds",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dp_rawlandz_mxm_jpl_dest_ds",
+						"type": "DatasetReference",
+						"parameters": {
+							"OutputPath": {
+								"value": "@pipeline().globalParameters.MaximoDataIngestionOutput",
+								"type": "Expression"
+							},
+							"DayToSub": {
+								"value": "@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "MXMRAW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:38:42Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

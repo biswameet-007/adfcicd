@@ -1,0 +1,186 @@
+{
+	"name": "dp_Ops_BackLogHistory_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "srcBackLogRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MaxKey"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkOpsBackLogHist",
+						"type": "DatasetReference"
+					},
+					"name": "sinkOpsBackLogHist"
+				}
+			],
+			"transformations": [
+				{
+					"name": "alterRowOpsBackLogHist"
+				},
+				{
+					"name": "joinMaxKey"
+				},
+				{
+					"name": "skOpsBackLogHist"
+				},
+				{
+					"name": "dcInsert"
+				},
+				{
+					"name": "sortOpsBackLogHist"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WORK_ORDER as string,",
+				"          GOVT_WO as string,",
+				"          DESCRIPTION as string,",
+				"          SITE_ID as integer,",
+				"          SITE as string,",
+				"          LOCATION_ID as integer,",
+				"          LOCATION as string,",
+				"          ASSET as string,",
+				"          REPORTED_DATE as timestamp,",
+				"          STATUS as string,",
+				"          WO_STATUS_CHANGEDATE as timestamp,",
+				"          PRIORITY as integer,",
+				"          TARGET_START_DT as timestamp,",
+				"          TARGET_FINISH_DT as timestamp,",
+				"          ACTLABHRS as decimal(18,9),",
+				"          WORK_GROUP as string,",
+				"          WORK_TYPE as string,",
+				"          PM_DUE_DT as timestamp,",
+				"          WO_OPEN_DT as timestamp,",
+				"          WO_DUE_DT as timestamp,",
+				"          WO_PRIORITY_THRESHOLD_DAYS as integer,",
+				"          WO_CLOSE_DT as timestamp,",
+				"          WO_AGE as decimal(18,4),",
+				"          WO_AGE_SEGMENT as string,",
+				"          WORK_TYPE_CM_PM as string,",
+				"          PERSON_GROUP_ID as integer,",
+				"          IS_BACKLOG as string,",
+				"          SNAPSHOT_DT as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT\\nWORK_ORDER,\\nGOVT_WO,\\nSMRY.DESCRIPTION AS DESCRIPTION,\\nSMRY.SITE_ID AS SITE_ID,\\nSITE,\\nSMRY.LOCATION_ID AS LOCATION_ID,\\nSMRY.LOCATION AS LOCATION,\\nASSET,\\nREPORTED_DATE,\\nSMRY.STATUS AS STATUS,\\nSMRY.WO_STATUS_CHANGEDATE AS WO_STATUS_CHANGEDATE,\\nPRIORITY,\\nTARGET_START_DT,\\nTARGET_FINISH_DT,\\nSMRY.ACTLABHRS AS ACTLABHRS,\\nWORK_GROUP,\\nWORK_TYPE,\\nPM_DUE_DT,\\nWO_OPEN_DT,\\nWO_DUE_DT,\\nWO_PRIORITY_THRESHOLD_DAYS,\\nWO_CLOSE_DT,\\nWO_AGE,\\nWO_AGE_SEGMENT,\\nWORK_TYPE_CM_PM,\\nSMRY.PERSON_GROUP_ID AS PERSON_GROUP_ID,\\nIS_BACKLOG,\\nEOMONTH(DATEADD(mm, -1, getdate())) AS SNAPSHOT_DT\\nFROM MXMDM.OPERATION_SUMMARY SMRY\\nINNER JOIN MXMDW.OPERATION OPS \\nON SMRY.WORK_ORDER = OPS.WONUM\\nAND SMRY.SITE_ID = OPS.SITE_ID\\nAND OPS.ISTASK=0\\nAND OPS.CURRENT_RECORD_IND=1\\nAND OPS.STATUS_FLAG=1\\nAND OPS.SNAPSHOT_DATE <=(SELECT MAX(SNAPSHOT_DATE) FROM MXMDW.OPERATION)\\nINNER JOIN MXMDW.SITE S\\nON S.SITE_NM = SMRY.SITE\\n',",
+				"     format: 'query',",
+				"     staged: true) ~> srcBackLogRead",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(OPERATION_BACKLOGHISTORY_ID),0) FROM MXMDM.OPERATION_BACKLOGHISTORY',",
+				"     format: 'query',",
+				"     staged: true) ~> MaxKey",
+				"dcInsert alterRow(insertIf(1==1)) ~> alterRowOpsBackLogHist",
+				"sortOpsBackLogHist, MaxKey join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMaxKey",
+				"joinMaxKey keyGenerate(output(NewOPERATION_BACKLOGHISTORY_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> skOpsBackLogHist",
+				"skOpsBackLogHist derive(NewOPERATION_BACKLOGHISTORY_ID = MAXKEY + NewOPERATION_BACKLOGHISTORY_ID,",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dcInsert",
+				"srcBackLogRead sort(asc(WORK_ORDER, true),",
+				"     asc(SITE_ID, true)) ~> sortOpsBackLogHist",
+				"alterRowOpsBackLogHist sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          OPERATION_BACKLOGHISTORY_ID as integer,",
+				"          WORK_ORDER as string,",
+				"          GOVT_WO as string,",
+				"          DESCRIPTION as string,",
+				"          SITE_ID as integer,",
+				"          SITE as string,",
+				"          LOCATION_ID as integer,",
+				"          LOCATION as string,",
+				"          ASSET as string,",
+				"          REPORTED_DATE as timestamp,",
+				"          STATUS as string,",
+				"          WO_STATUS_CHANGEDATE as timestamp,",
+				"          PRIORITY as integer,",
+				"          TARGET_START_DT as timestamp,",
+				"          TARGET_FINISH_DT as timestamp,",
+				"          ACTLABHRS as decimal(18,9),",
+				"          WORK_GROUP as string,",
+				"          WORK_TYPE as string,",
+				"          PM_DUE_DT as timestamp,",
+				"          WO_OPEN_DT as timestamp,",
+				"          WO_DUE_DT as timestamp,",
+				"          WO_PRIORITY_THRESHOLD_DAYS as integer,",
+				"          WO_CLOSE_DT as timestamp,",
+				"          WO_AGE as decimal(18,4),",
+				"          WO_AGE_SEGMENT as string,",
+				"          WORK_TYPE_CM_PM as string,",
+				"          PERSON_GROUP_ID as integer,",
+				"          IS_BACKLOG as string,",
+				"          SNAPSHOT_DT as date,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          OPERATION_BACKLOGHISTORY_ID = NewOPERATION_BACKLOGHISTORY_ID,",
+				"          WORK_ORDER,",
+				"          GOVT_WO,",
+				"          DESCRIPTION,",
+				"          SITE_ID,",
+				"          SITE,",
+				"          LOCATION_ID,",
+				"          LOCATION,",
+				"          ASSET,",
+				"          REPORTED_DATE,",
+				"          STATUS,",
+				"          WO_STATUS_CHANGEDATE,",
+				"          PRIORITY,",
+				"          TARGET_START_DT,",
+				"          TARGET_FINISH_DT,",
+				"          ACTLABHRS,",
+				"          WORK_GROUP,",
+				"          WORK_TYPE,",
+				"          PM_DUE_DT,",
+				"          WO_OPEN_DT,",
+				"          WO_DUE_DT,",
+				"          WO_PRIORITY_THRESHOLD_DAYS,",
+				"          WO_CLOSE_DT,",
+				"          WO_AGE,",
+				"          WO_AGE_SEGMENT,",
+				"          WORK_TYPE_CM_PM,",
+				"          PERSON_GROUP_ID,",
+				"          IS_BACKLOG,",
+				"          SNAPSHOT_DT,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkOpsBackLogHist"
+			]
+		}
+	}
+}

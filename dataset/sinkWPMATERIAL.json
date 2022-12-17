@@ -1,0 +1,76 @@
+{
+	"name": "sinkWPMATERIAL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "WPMATERIAL_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "SITE_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ORGANIZATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LOCATION_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "WORKORDER_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PR",
+				"type": "varchar"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "ROWSTAMP",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "REQUESTBY",
+				"type": "varchar"
+			},
+			{
+				"name": "REQUIREDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMDW",
+			"table": "WPMATERIAL"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

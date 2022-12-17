@@ -1,0 +1,73 @@
+{
+	"name": "SinkStgWorklog",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "WORKLOGID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "RECORDKEY",
+				"type": "varchar"
+			},
+			{
+				"name": "SITEID",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGID",
+				"type": "varchar"
+			},
+			{
+				"name": "LOGTYPE",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEBY",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "varchar"
+			},
+			{
+				"name": "MODIFYBY",
+				"type": "varchar"
+			},
+			{
+				"name": "MODIFYDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CLASS",
+				"type": "varchar"
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_WORKLOG"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

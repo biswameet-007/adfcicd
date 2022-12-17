@@ -1,0 +1,62 @@
+{
+	"name": "RawPmMeterRead_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"InputPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "pmmeter.txt",
+				"folderPath": {
+					"value": "@dataset().InputPath",
+					"type": "Expression"
+				},
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "PMMETERID",
+				"type": "String"
+			},
+			{
+				"name": "PMNUM",
+				"type": "String"
+			},
+			{
+				"name": "SITEID",
+				"type": "String"
+			},
+			{
+				"name": "ORGID",
+				"type": "String"
+			},
+			{
+				"name": "METERNAME",
+				"type": "String"
+			},
+			{
+				"name": "LASTPMWOGENREAD",
+				"type": "String"
+			},
+			{
+				"name": "LASTPMWOGENREADDT",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

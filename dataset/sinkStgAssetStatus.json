@@ -1,0 +1,65 @@
+{
+	"name": "sinkStgAssetStatus",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ASSETSTATUSID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ASSETNUM",
+				"type": "varchar"
+			},
+			{
+				"name": "WONUM",
+				"type": "varchar"
+			},
+			{
+				"name": "LOCATION",
+				"type": "varchar"
+			},
+			{
+				"name": "SITEID",
+				"type": "varchar"
+			},
+			{
+				"name": "ORGID",
+				"type": "varchar"
+			},
+			{
+				"name": "DOWNTIME",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 9
+			},
+			{
+				"name": "CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EFFECTIVE_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_ASSET_STATUS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

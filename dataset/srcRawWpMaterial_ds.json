@@ -1,0 +1,70 @@
+{
+	"name": "srcRawWpMaterial_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"InputPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "wpmaterial.txt",
+				"folderPath": {
+					"value": "@dataset().InputPath",
+					"type": "Expression"
+				},
+				"fileSystem": "raw"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "WONUM",
+				"type": "String"
+			},
+			{
+				"name": "SITEID",
+				"type": "String"
+			},
+			{
+				"name": "ORGID",
+				"type": "String"
+			},
+			{
+				"name": "LOCATION",
+				"type": "String"
+			},
+			{
+				"name": "PR",
+				"type": "String"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "REQUESTBY",
+				"type": "String"
+			},
+			{
+				"name": "REQUIREDATE",
+				"type": "String"
+			},
+			{
+				"name": "ROWSTAMP",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

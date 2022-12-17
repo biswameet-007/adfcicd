@@ -1,0 +1,49 @@
+{
+	"name": "dp_Worklog_pln",
+	"properties": {
+		"activities": [
+			{
+				"name": "dp_Worklog_df",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:30:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dp_Worklog_df",
+						"type": "DataFlowReference"
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "AzureDataLakeStorage1",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": {
+							"value": "@pipeline().globalParameters.MaximoLog",
+							"type": "Expression"
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine",
+					"sourceStagingConcurrency": 1,
+					"continueOnError": true
+				}
+			}
+		],
+		"folder": {
+			"name": "MXMDW"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-12-17T07:42:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

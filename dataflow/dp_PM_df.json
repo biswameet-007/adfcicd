@@ -1,0 +1,312 @@
+{
+	"name": "dp_PM_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "PMStgRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "ExistPMRows"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MAXKey"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkPM",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPMInsert",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "SinkPM",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPMUpdate"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lkpOrgSite"
+				},
+				{
+					"name": "selExistRows"
+				},
+				{
+					"name": "existsPM"
+				},
+				{
+					"name": "lkpExistPM"
+				},
+				{
+					"name": "splitPM"
+				},
+				{
+					"name": "selPM"
+				},
+				{
+					"name": "joinMaxKey"
+				},
+				{
+					"name": "skPM"
+				},
+				{
+					"name": "dCPMInsert"
+				},
+				{
+					"name": "dCPMUpdate"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "alterRowUpdate"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PMUID as integer,",
+				"          PMNUM as string,",
+				"          DESCRIPTION as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LASTCOMPDATE as date,",
+				"          STATUS as string,",
+				"          NEXTDATE as date,",
+				"          USETARGETDATE as integer,",
+				"          REFORECAST as integer,",
+				"          ALERTLEAD as integer,",
+				"          DOWNTIME as integer,",
+				"          CHANGEDATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT PMUID,PMNUM,DESCRIPTION,SITEID,ORGID,LASTCOMPDATE,STATUS,NEXTDATE,USETARGETDATE,REFORECAST,ALERTLEAD,DOWNTIME,CHANGEDATE FROM MXMSTG.STG_PM',",
+				"     format: 'query',",
+				"     staged: true) ~> PMStgRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,S.SITE_ID AS SITE_ID ,O.ORGANIZATION_NM,S.SITE_NM FROM MXMDW.ORGANIZATION O,MXMDW.SITE S WHERE S.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          PM_ID as integer,",
+				"          PMUID as integer,",
+				"          PMNUM as string,",
+				"          SITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT PM_ID,PMUID,PMNUM,SITE_ID FROM MXMDW.PM',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistPMRows",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(PM_ID),0) FROM MXMDW.PM',",
+				"     format: 'query',",
+				"     staged: true) ~> MAXKey",
+				"PMStgRead, OrgSiteRefRead lookup(ORGID == ORGANIZATION_NM",
+				"     && SITEID == SITE_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpOrgSite",
+				"ExistPMRows select(mapColumn(",
+				"          ExistPMUID = PMUID,",
+				"          ExistPMNUM = PMNUM,",
+				"          ExistSITE_ID = SITE_ID,",
+				"          ExistPM_ID = PM_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistRows",
+				"lkpOrgSite, selExistRows exists(PMUID == ExistPMUID",
+				"     && PMNUM == ExistPMNUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> existsPM",
+				"existsPM, selExistRows lookup(PMUID == ExistPMUID",
+				"     && PMNUM == ExistPMNUM",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpExistPM",
+				"selPM split(isNull(ExistPM_ID),",
+				"     disjoint: false) ~> splitPM@(NewItem, UpdateItem)",
+				"lkpExistPM select(mapColumn(",
+				"          PMUID,",
+				"          PMNUM,",
+				"          DESCRIPTION,",
+				"          LASTCOMPDATE,",
+				"          STATUS,",
+				"          NEXTDATE,",
+				"          USETARGETDATE,",
+				"          REFORECAST,",
+				"          ALERTLEAD,",
+				"          DOWNTIME,",
+				"          CHANGEDATE,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID,",
+				"          ExistPMUID,",
+				"          ExistPMNUM,",
+				"          ExistSITE_ID,",
+				"          ExistPM_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selPM",
+				"splitPM@NewItem, MAXKey join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinMaxKey",
+				"joinMaxKey keyGenerate(output(NewPM_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> skPM",
+				"skPM derive(NewPM_ID = MAXKEY + NewPM_ID,",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dCPMInsert",
+				"splitPM@UpdateItem derive(EFFECTIVE_DT = currentTimestamp()) ~> dCPMUpdate",
+				"dCPMInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"dCPMUpdate alterRow(updateIf(1==1)) ~> alterRowUpdate",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PM_ID as integer,",
+				"          PMUID as integer,",
+				"          PMNUM as string,",
+				"          DESCRIPTION as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LASTCOMPDATE as date,",
+				"          STATUS as string,",
+				"          NEXTDATE as date,",
+				"          USETARGETDATE as integer,",
+				"          ALERTLEAD as integer,",
+				"          REFORECAST as integer,",
+				"          DOWNTIME as integer,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          PM_ID = NewPM_ID,",
+				"          PMUID,",
+				"          PMNUM,",
+				"          DESCRIPTION,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          LASTCOMPDATE,",
+				"          STATUS,",
+				"          NEXTDATE,",
+				"          USETARGETDATE,",
+				"          REFORECAST,",
+				"          ALERTLEAD,",
+				"          DOWNTIME,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkPMInsert",
+				"alterRowUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PM_ID as integer,",
+				"          PMUID as integer,",
+				"          PMNUM as string,",
+				"          DESCRIPTION as string,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LASTCOMPDATE as date,",
+				"          STATUS as string,",
+				"          NEXTDATE as date,",
+				"          USETARGETDATE as integer,",
+				"          ALERTLEAD as integer,",
+				"          REFORECAST as integer,",
+				"          DOWNTIME as integer,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['PMNUM','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PM_ID = ExistPM_ID,",
+				"          PMUID = ExistPMUID,",
+				"          PMNUM = ExistPMNUM,",
+				"          DESCRIPTION,",
+				"          SITE_ID = ExistSITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          LASTCOMPDATE,",
+				"          STATUS,",
+				"          NEXTDATE,",
+				"          USETARGETDATE,",
+				"          REFORECAST,",
+				"          ALERTLEAD,",
+				"          DOWNTIME,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkPMUpdate"
+			]
+		}
+	}
+}

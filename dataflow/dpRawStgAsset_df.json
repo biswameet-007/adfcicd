@@ -1,0 +1,137 @@
+{
+	"name": "dpRawStgAsset_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcRawStgAsset_ds",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawStgAsset"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynpMXMSTGAsset",
+						"type": "DatasetReference"
+					},
+					"name": "sinkRawStgAsset",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCRawStgAsset"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          INSTALLDATE as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          CHANGEDATE as string,",
+				"          ASSETTYPE as string,",
+				"          STATUS as string,",
+				"          CUSTCODE as string,",
+				"          MANUFACTURER as string,",
+				"          WARRANTYEXPDATE as string,",
+				"          GLACCOUNT as string,",
+				"          SERIALNUM as string,",
+				"          MODEL as string,",
+				"          ASSETID as string,",
+				"          MFGNAME as string,",
+				"          CLASSIFICATIONCODE as string,",
+				"          CLASSIFICATIONNAME as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawStgAsset",
+				"srcRawStgAsset derive(ENTRY_DT = currentTimestamp(),",
+				"          ASSETNUM = iifNull(ASSETNUM, 'NA', ASSETNUM),",
+				"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+				"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+				"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+				"          ORGID = iifNull(ORGID, 'NA', ORGID),",
+				"          CHANGEDATE = iifNull(toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')),",
+				"          WARRANTYEXPDATE = toDate(substring(WARRANTYEXPDATE, 1, 10), 'yyyy-MM-dd'),",
+				"          STATUS = iifNull(STATUS, 'NA', STATUS),",
+				"          ASSETID = toInteger(ASSETID)) ~> dCRawStgAsset",
+				"dCRawStgAsset sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSETNUM as string,",
+				"          ASSETTAG as string,",
+				"          LOCATION as string,",
+				"          DESCRIPTION as string,",
+				"          INSTALLDATE as date,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          CHANGEDATE as timestamp,",
+				"          ENTRY_DT as timestamp,",
+				"          ASSETTYPE as string,",
+				"          STATUS as string,",
+				"          CUSTCODE as string,",
+				"          MANUFACTURER as string,",
+				"          WARRANTYEXPDATE as date,",
+				"          GLACCOUNT as string,",
+				"          SERIALNUM as string,",
+				"          MODEL as string,",
+				"          MAXIMO_ASSETID as integer,",
+				"          MFG_DESCRIPTION as string,",
+				"          CLASSIFICATION_CD as string,",
+				"          CLASSIFICATION_DESC as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          ASSETNUM,",
+				"          ASSETTAG,",
+				"          LOCATION,",
+				"          DESCRIPTION,",
+				"          INSTALLDATE,",
+				"          SITEID,",
+				"          ORGID,",
+				"          CHANGEDATE,",
+				"          ENTRY_DT,",
+				"          ASSETTYPE,",
+				"          STATUS,",
+				"          CUSTCODE,",
+				"          MANUFACTURER,",
+				"          WARRANTYEXPDATE,",
+				"          GLACCOUNT,",
+				"          SERIALNUM,",
+				"          MODEL,",
+				"          MAXIMO_ASSETID = ASSETID,",
+				"          MFG_DESCRIPTION = MFGNAME,",
+				"          CLASSIFICATION_CD = CLASSIFICATIONCODE,",
+				"          CLASSIFICATION_DESC = CLASSIFICATIONNAME",
+				"     )) ~> sinkRawStgAsset"
+			]
+		}
+	}
+}

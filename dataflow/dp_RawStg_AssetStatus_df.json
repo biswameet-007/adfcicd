@@ -1,0 +1,99 @@
+{
+	"name": "dp_RawStg_AssetStatus_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SrcRawAssetStatus_ds",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawAssetStatus"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkStgAssetStatus",
+						"type": "DatasetReference"
+					},
+					"name": "sinkStgAssetStatus",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCRawStgAssetStatus"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ASSETSTATUSID as string,",
+				"          ASSETNUM as string,",
+				"          WONUM as string,",
+				"          DOWNTIME as string,",
+				"          CODE as string,",
+				"          LOCATION as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          CHANGEDATE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> srcRawAssetStatus",
+				"srcRawAssetStatus derive(ASSETSTATUSID = toInteger(ASSETSTATUSID),",
+				"          DOWNTIME = toDecimal(DOWNTIME, 18, 9),",
+				"          LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+				"          SITEID = iifNull(SITEID, 'NA', SITEID),",
+				"          CHANGEDATE = toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'),",
+				"          EFFECTIVE_DT = currentTimestamp()) ~> dCRawStgAssetStatus",
+				"dCRawStgAssetStatus sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ASSETSTATUSID as integer,",
+				"          ASSETNUM as string,",
+				"          WONUM as string,",
+				"          LOCATION as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          DOWNTIME as decimal(18,9),",
+				"          CODE as string,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          ASSETSTATUSID,",
+				"          ASSETNUM,",
+				"          WONUM,",
+				"          LOCATION,",
+				"          SITEID,",
+				"          ORGID,",
+				"          DOWNTIME,",
+				"          CODE,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkStgAssetStatus"
+			]
+		}
+	}
+}

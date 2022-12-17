@@ -1,0 +1,365 @@
+{
+	"name": "dp_Worklog_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "srcWorklogStgRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "OrgSiteRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "WorkOrderRefRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "ExistWorklogRowsRead"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "MAXKEY"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "WorklogStgRef"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkWorklog",
+						"type": "DatasetReference"
+					},
+					"name": "sinkWorklogInsert",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "sinkWorklog",
+						"type": "DatasetReference"
+					},
+					"name": "sinkWorklogUpdate",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "lkpOrgSite"
+				},
+				{
+					"name": "lkpWO"
+				},
+				{
+					"name": "selExistRows"
+				},
+				{
+					"name": "lkpExist"
+				},
+				{
+					"name": "selWorklog"
+				},
+				{
+					"name": "joinWorklogMaxKey"
+				},
+				{
+					"name": "sKeyWorklog"
+				},
+				{
+					"name": "dCInsert"
+				},
+				{
+					"name": "alterRowInsert"
+				},
+				{
+					"name": "splitWorklogCurrInd"
+				},
+				{
+					"name": "selUpdateCurrInd"
+				},
+				{
+					"name": "dCUpdateCurrInd"
+				},
+				{
+					"name": "alterRowUpdate"
+				},
+				{
+					"name": "lkpWorklogRef"
+				},
+				{
+					"name": "dCWorklog"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WORKLOG_NBR as integer,",
+				"          RECORDKEY as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOGTYPE as string,",
+				"          CREATEBY as string,",
+				"          CREATEDATE as timestamp,",
+				"          DESCRIPTION as string,",
+				"          MODIFYBY as string,",
+				"          MODIFYDATE as timestamp,",
+				"          CLASS as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WORKLOGID AS WORKLOG_NBR,RECORDKEY,SITEID,ORGID,LOGTYPE,CREATEBY,CREATEDATE,DESCRIPTION,MODIFYBY,MODIFYDATE,CLASS FROM MXMSTG.STG_WORKLOG',",
+				"     format: 'query',",
+				"     staged: true) ~> srcWorklogStgRead",
+				"source(output(",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_NM as string,",
+				"          SITE_NM as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT O.ORGANIZATION_ID AS ORGANIZATION_ID,S.SITE_ID AS SITE_ID ,O.ORGANIZATION_NM,S.SITE_NM FROM MXMDW.ORGANIZATION O,MXMDW.SITE S WHERE S.ORGANIZATION_ID=O.ORGANIZATION_ID',",
+				"     format: 'query',",
+				"     staged: true) ~> OrgSiteRefRead",
+				"source(output(",
+				"          WORKORDER_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WORKORDER_ID,WONUM,SITE_ID FROM MXMDW.WORKORDER',",
+				"     format: 'query',",
+				"     staged: true) ~> WorkOrderRefRead",
+				"source(output(",
+				"          WORKLOG_ID as integer,",
+				"          RECORDKEY as string,",
+				"          SITE_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WORKLOG_ID,RECORDKEY,SITE_ID FROM MXMDW.WORKLOG WHERE CURRENT_RECORD_IND=1',",
+				"     format: 'query',",
+				"     staged: true) ~> ExistWorklogRowsRead",
+				"source(output(",
+				"          MAXKEY as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAXKEY=ISNULL(MAX(WORKLOG_ID),0) FROM MXMDW.WORKLOG',",
+				"     format: 'query',",
+				"     staged: true) ~> MAXKEY",
+				"source(output(",
+				"          RefWORKLOGID as integer,",
+				"          RefRECORDKEY as string,",
+				"          RefSITEID as string,",
+				"          FLAG as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT MAX(WORKLOGID) AS RefWORKLOGID,RECORDKEY AS RefRECORDKEY,SITEID AS RefSITEID,1 AS FLAG FROM MXMSTG.STG_WORKLOG GROUP BY RECORDKEY,SITEID',",
+				"     format: 'query',",
+				"     staged: true) ~> WorklogStgRef",
+				"srcWorklogStgRead, OrgSiteRefRead lookup(SITEID == SITE_NM",
+				"     && ORGID == ORGANIZATION_NM,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpOrgSite",
+				"lkpOrgSite, WorkOrderRefRead lookup(RECORDKEY == WONUM",
+				"     && OrgSiteRefRead@SITE_ID == WorkOrderRefRead@SITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lkpWO",
+				"ExistWorklogRowsRead select(mapColumn(",
+				"          ExistWORKLOG_ID = WORKLOG_ID,",
+				"          ExistRECORDKEY = RECORDKEY,",
+				"          ExistSITE_ID = SITE_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selExistRows",
+				"dCWorklog, selExistRows lookup(RECORDKEY == ExistRECORDKEY",
+				"     && SITE_ID == ExistSITE_ID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'both')~> lkpExist",
+				"lkpWorklogRef select(mapColumn(",
+				"          WORKLOG_NBR,",
+				"          RECORDKEY,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LOGTYPE,",
+				"          CREATEBY,",
+				"          CREATEDATE,",
+				"          DESCRIPTION,",
+				"          MODIFYBY,",
+				"          MODIFYDATE,",
+				"          CLASS,",
+				"          ORGANIZATION_ID,",
+				"          SITE_ID = OrgSiteRefRead@SITE_ID,",
+				"          WORKORDER_ID,",
+				"          FLAG",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selWorklog",
+				"lkpExist, MAXKEY join(1==1,",
+				"     joinType:'cross',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinWorklogMaxKey",
+				"joinWorklogMaxKey keyGenerate(output(NewWORKLOG_ID as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> sKeyWorklog",
+				"sKeyWorklog derive(EFFECTIVE_DT = currentTimestamp(),",
+				"          NewWORKLOG_ID = MAXKEY + NewWORKLOG_ID) ~> dCInsert",
+				"dCInsert alterRow(insertIf(1==1)) ~> alterRowInsert",
+				"lkpExist split(!isNull(ExistWORKLOG_ID),",
+				"     disjoint: false) ~> splitWorklogCurrInd@(UpdateCurrentRecInd, DonotProcess)",
+				"splitWorklogCurrInd@UpdateCurrentRecInd select(mapColumn(",
+				"          WORKLOG_NBR,",
+				"          RECORDKEY,",
+				"          SITEID,",
+				"          ORGID,",
+				"          WORKORDER_ID,",
+				"          ExistWORKLOG_ID,",
+				"          ExistRECORDKEY,",
+				"          ExistSITE_ID,",
+				"          CURRENT_RECORD_IND",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selUpdateCurrInd",
+				"selUpdateCurrInd derive(NewCURRENT_RECORD_IND = toInteger(0)) ~> dCUpdateCurrInd",
+				"dCUpdateCurrInd alterRow(updateIf(CURRENT_RECORD_IND==1)) ~> alterRowUpdate",
+				"lkpWO, WorklogStgRef lookup(WORKLOG_NBR == RefWORKLOGID",
+				"     && RECORDKEY == RefRECORDKEY",
+				"     && SITEID == RefSITEID,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'both')~> lkpWorklogRef",
+				"selWorklog derive(CURRENT_RECORD_IND = iifNull(FLAG, 0, 1)) ~> dCWorklog",
+				"alterRowInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WORKLOG_ID as integer,",
+				"          WORKLOG_NBR as integer,",
+				"          RECORDKEY as string,",
+				"          WORKORDER_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LOGTYPE as string,",
+				"          CREATEBY as string,",
+				"          CREATEDATE as timestamp,",
+				"          DESCRIPTION as string,",
+				"          MODIFYBY as string,",
+				"          MODIFYDATE as timestamp,",
+				"          CLASS as string,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          CURRENT_RECORD_IND as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          WORKLOG_ID = NewWORKLOG_ID,",
+				"          WORKLOG_NBR,",
+				"          RECORDKEY,",
+				"          WORKORDER_ID,",
+				"          SITE_ID,",
+				"          ORGANIZATION_ID,",
+				"          LOGTYPE,",
+				"          CREATEBY,",
+				"          CREATEDATE,",
+				"          DESCRIPTION,",
+				"          MODIFYBY,",
+				"          MODIFYDATE,",
+				"          CLASS,",
+				"          CURRENT_RECORD_IND,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkWorklogInsert",
+				"alterRowUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WORKLOG_ID as integer,",
+				"          WORKLOG_NBR as integer,",
+				"          RECORDKEY as string,",
+				"          WORKORDER_ID as integer,",
+				"          SITE_ID as integer,",
+				"          ORGANIZATION_ID as integer,",
+				"          LOGTYPE as string,",
+				"          CREATEBY as string,",
+				"          CREATEDATE as timestamp,",
+				"          DESCRIPTION as string,",
+				"          MODIFYBY as string,",
+				"          MODIFYDATE as timestamp,",
+				"          CLASS as string,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          CURRENT_RECORD_IND as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['WORKLOG_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          WORKLOG_ID = ExistWORKLOG_ID,",
+				"          CURRENT_RECORD_IND = NewCURRENT_RECORD_IND",
+				"     )) ~> sinkWorklogUpdate"
+			]
+		}
+	}
+}

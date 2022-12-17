@@ -1,0 +1,17 @@
+{
+	"name": "AzureSynpMXMSTGJobplan",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "MXMSTG",
+			"table": "STG_JOBPLAN"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

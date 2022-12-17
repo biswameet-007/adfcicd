@@ -1,0 +1,113 @@
+{
+	"name": "dp_RawStg_PM_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dp_RawReadPMFile_ds",
+						"type": "DatasetReference"
+					},
+					"name": "RawReadPMFile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkPMStg",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPMSTG",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dcRawStgPM"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PMUID as string,",
+				"          PMNUM as string,",
+				"          DESCRIPTION as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LASTCOMPDATE as string,",
+				"          STATUS as string,",
+				"          NEXTDATE as string,",
+				"          USETARGETDATE as string,",
+				"          ALERTLEAD as string,",
+				"          DOWNTIME as string,",
+				"          CHANGEDATE as string,",
+				"          REFORECAST as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> RawReadPMFile",
+				"RawReadPMFile derive(LASTCOMPDATE = iifNull(toDate(substring(LASTCOMPDATE, 1, 10), 'yyyy-MM-dd'), toDate('1900-01-01','yyyy-MM-dd'), toDate(substring(LASTCOMPDATE, 1, 10), 'yyyy-MM-dd')),",
+				"          NEXTDATE = iifNull(toDate(substring(NEXTDATE, 1, 10), 'yyyy-MM-dd'), toDate('1900-01-01','yyyy-MM-dd'), toDate(substring(NEXTDATE, 1, 10), 'yyyy-MM-dd')),",
+				"          USETARGETDATE = toInteger(USETARGETDATE),",
+				"          CHANGEDATE = iifNull(toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(CHANGEDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')),",
+				"          EFFECTIVE_DT = currentTimestamp(),",
+				"          ALERTLEAD = toInteger(ALERTLEAD),",
+				"          DOWNTIME = toInteger(DOWNTIME)) ~> dcRawStgPM",
+				"dcRawStgPM sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PMUID as integer,",
+				"          PMNUM as string,",
+				"          DESCRIPTION as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LASTCOMPDATE as date,",
+				"          STATUS as string,",
+				"          NEXTDATE as date,",
+				"          USETARGETDATE as integer,",
+				"          ALERTLEAD as integer,",
+				"          REFORECAST as integer,",
+				"          DOWNTIME as integer,",
+				"          CHANGEDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          PMUID,",
+				"          PMNUM,",
+				"          DESCRIPTION,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LASTCOMPDATE,",
+				"          STATUS,",
+				"          NEXTDATE,",
+				"          USETARGETDATE,",
+				"          REFORECAST,",
+				"          ALERTLEAD,",
+				"          DOWNTIME,",
+				"          CHANGEDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkPMSTG"
+			]
+		}
+	}
+}

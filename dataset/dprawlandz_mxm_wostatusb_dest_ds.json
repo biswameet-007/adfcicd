@@ -1,0 +1,71 @@
+{
+	"name": "dprawlandz_mxm_wostatusb_dest_ds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "dp_rawlandz_mxm_ls_dstr",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pDate": {
+				"type": "string"
+			},
+			"OutputPath": {
+				"type": "string"
+			},
+			"DaysToSub": {
+				"type": "string",
+				"defaultValue": "@{formatDateTime(addDays(utcNow(),pipeline().globalParameters.MaximoIncrementalExtractDate),'yyyy-MM-dd')}"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('wostatus_',dataset().DaysToSub,'.txt')",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().OutputPath",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ASSETNUM",
+				"type": "String"
+			},
+			{
+				"name": "LOCATION",
+				"type": "String"
+			},
+			{
+				"name": "DESCRIPTION",
+				"type": "String"
+			},
+			{
+				"name": "INSTALLDATE",
+				"type": "String"
+			},
+			{
+				"name": "SITEID",
+				"type": "String"
+			},
+			{
+				"name": "ORGID",
+				"type": "String"
+			},
+			{
+				"name": "CHANGEDATE",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

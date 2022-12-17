@@ -1,0 +1,139 @@
+{
+	"name": "dp_WO_HHMM_Hist_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "OrgSiteRefRd",
+						"type": "DatasetReference"
+					},
+					"name": "srcWORead"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SinkWorkorder1",
+						"type": "DatasetReference"
+					},
+					"name": "sinkWOhhmmUpdate",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCWOhhmm"
+				},
+				{
+					"name": "alterRowWOhhmm"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WORKORDER_ID as integer,",
+				"          WONUM as string,",
+				"          SITE_ID as integer,",
+				"          ACTLABHRS as decimal(18,9),",
+				"          ACTINTLABHRS as decimal(18,9),",
+				"          ESTDUR as decimal(18,9)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT WORKORDER_ID,WONUM,SITE_ID,ACTLABHRS,ACTINTLABHRS,ESTDUR FROM MXMDW.WORKORDER',",
+				"     format: 'query',",
+				"     staged: true) ~> srcWORead",
+				"srcWORead derive(ACTLABHRS_HHMM = replace(iif(ACTLABHRS==0.000000000,'00:00',concat(substringIndex(toString(ACTLABHRS), '.', 1),':',toString(round(60 * (ACTLABHRS - toInteger(substringIndex(toString(ACTLABHRS), '.', 1))))))),':-',':'),",
+				"          ACTINTLABHRS_HHMM = replace(iif(ACTINTLABHRS==0.000000000,'00:00',concat(substringIndex(toString(ACTINTLABHRS), '.', 1),':',toString(round(60 * (ACTINTLABHRS - toInteger(substringIndex(toString(ACTINTLABHRS), '.', 1))))))),':-',':'),",
+				"          ESTDUR_HHMM = replace(iif(ESTDUR==0.000000000,'00:00',concat(substringIndex(toString(ESTDUR), '.', 1),':',toString(round(60 * (ESTDUR - toInteger(substringIndex(toString(ESTDUR), '.', 1))))))),':-',':')) ~> dCWOhhmm",
+				"dCWOhhmm alterRow(updateIf(1==1)) ~> alterRowWOhhmm",
+				"alterRowWOhhmm sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WORKORDER_ID as integer,",
+				"          WONUM as string,",
+				"          PARENT as string,",
+				"          GOVTWONUM as string,",
+				"          ORGANIZATION_ID as integer,",
+				"          SITE_ID as integer,",
+				"          LOCATION_ID as integer,",
+				"          ASSETNUM as string,",
+				"          STATUS as string,",
+				"          JPNUM as string,",
+				"          WORKTYPE as string,",
+				"          TASKID as integer,",
+				"          ISTASK as integer,",
+				"          DESCRIPTION as string,",
+				"          PLUSCJPREVNUM as integer,",
+				"          WOPRIORITY as integer,",
+				"          CHANGEDATE as timestamp,",
+				"          STATUSDATE as timestamp,",
+				"          CHANGEBY as string,",
+				"          PMDUEDATE as date,",
+				"          TARGSTARTDATE as timestamp,",
+				"          TARGCOMPDATE as timestamp,",
+				"          REPORTDATE as timestamp,",
+				"          RESPONDBY as timestamp,",
+				"          ACTLABHRS as decimal(18,9),",
+				"          ACTSTART as timestamp,",
+				"          ACTFINISH as timestamp,",
+				"          ACTINTLABHRS as decimal(18,9),",
+				"          ESTDUR as decimal(18,9),",
+				"          WOGROUP as string,",
+				"          PERSONGROUP as string,",
+				"          OWNERGROUP as string,",
+				"          PLUSCFREQUENCY as integer,",
+				"          PLUSCFREQUNIT as string,",
+				"          PMNEXTDUEDATE as date,",
+				"          PMNUM as string,",
+				"          EFFECTIVE_DT as timestamp,",
+				"          SRC_TYPE_HASH_KEY as string,",
+				"          VECPROJECTTYPE as string,",
+				"          WOLABLNK as string,",
+				"          REPORTEDBY as string,",
+				"          ONBEHALFOF as string,",
+				"          OWNER as string,",
+				"          ORIGRECORDID as string,",
+				"          VECPWS as string,",
+				"          VECPWSSITE as string,",
+				"          FAILURECODE as string,",
+				"          ESTLABCOST as decimal(18,6),",
+				"          ESTMATCOST as decimal(18,6),",
+				"          ACTLABCOST as decimal(18,6),",
+				"          GENERATEDFORPO as string,",
+				"          VECPROJECTNUM as string,",
+				"          WBS as string,",
+				"          WOCLASS as string,",
+				"          ACTLABHRS_HHMM as string,",
+				"          ACTINTLABHRS_HHMM as string,",
+				"          ESTDUR_HHMM as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['WORKORDER_ID','WONUM','SITE_ID'],",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     outputRejectedData: true,",
+				"     mapColumn(",
+				"          WORKORDER_ID,",
+				"          WONUM,",
+				"          SITE_ID,",
+				"          ACTLABHRS_HHMM,",
+				"          ACTINTLABHRS_HHMM,",
+				"          ESTDUR_HHMM",
+				"     )) ~> sinkWOhhmmUpdate"
+			]
+		}
+	}
+}

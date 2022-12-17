@@ -1,0 +1,99 @@
+{
+	"name": "dp_RawStg_WpMaterial_df",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "srcRawWpMaterial_ds",
+						"type": "DatasetReference"
+					},
+					"name": "srcRawwpMaterial"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "sinkSTGWPMATERIAL",
+						"type": "DatasetReference"
+					},
+					"name": "sinkStgWpMaterial",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "dCStgwpmaterial"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          WONUM as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOCATION as string,",
+				"          PR as string,",
+				"          DESCRIPTION as string,",
+				"          REQUESTBY as string,",
+				"          REQUIREDATE as string,",
+				"          ROWSTAMP as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     purgeFiles: true) ~> srcRawwpMaterial",
+				"srcRawwpMaterial derive(LOCATION = iifNull(LOCATION, 'NA', LOCATION),",
+				"          DESCRIPTION = iifNull(DESCRIPTION, 'NA', DESCRIPTION),",
+				"          REQUIREDATE = iifNull(toTimestamp(substring(REQUIREDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS'), toTimestamp('1900-01-01 00:00:00','yyyy-MM-dd HH:mm:ss'), toTimestamp(substring(REQUIREDATE, 1, 23), 'yyyy-MM-dd HH:mm:ss.SSS')),",
+				"          EFFECTIVE_DT = currentTimestamp(),",
+				"          ROWSTAMP = toInteger(ROWSTAMP)) ~> dCStgwpmaterial",
+				"dCStgwpmaterial sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          WONUM as string,",
+				"          SITEID as string,",
+				"          ORGID as string,",
+				"          LOCATION as string,",
+				"          PR as string,",
+				"          DESCRIPTION as string,",
+				"          ROWSTAMP as integer,",
+				"          REQUESTBY as string,",
+				"          REQUIREDATE as timestamp,",
+				"          EFFECTIVE_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'allErrors',",
+				"     outputRejectedData: true,",
+				"     rejectedData_fileSystem: 'raw',",
+				"     rejectedData_folderPath: 'maximo/rejects',",
+				"     transactionCommit: 'batch',",
+				"     reportSuccessOnError: true,",
+				"     mapColumn(",
+				"          WONUM,",
+				"          SITEID,",
+				"          ORGID,",
+				"          LOCATION,",
+				"          PR,",
+				"          DESCRIPTION,",
+				"          ROWSTAMP,",
+				"          REQUESTBY,",
+				"          REQUIREDATE,",
+				"          EFFECTIVE_DT",
+				"     )) ~> sinkStgWpMaterial"
+			]
+		}
+	}
+}
